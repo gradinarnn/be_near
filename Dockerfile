@@ -1,4 +1,3 @@
-  GNU nano 4.8                       Dockerfile                       Modified
 
 FROM python:latest
 
