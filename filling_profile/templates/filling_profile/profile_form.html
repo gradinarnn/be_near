@@ -1,0 +1,202 @@
+{% extends '.\base.html' %}
+
+
+<head>
+
+
+    <meta charset="utf-8"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title%} Заполнение профиля {% endblock %}</title>
+
+</head>
+<body>
+
+
+{% block content %}
+
+<form action="{% url 'press_ok' %}" method="post" style="background:#c0bebd">
+
+    {% csrf_token %}
+
+
+
+    {{ form.as_p }}
+    <div class="container" style="background:#FDF2EB">
+ <div class="content">
+
+     Встреча c 24 по 30 июля
+        <h2><strong>Daniil Polozov </strong></h2>
+     🕹 PC Gaming, 💻 Product Manager, 😎 StartupMaker<br>
+     jokerdab@gmail.com | @joker_dab | @jokerdabro
+    </div>
+
+    </div>
+
+
+
+    <div class="container" style="background:#FFFFFF">
+
+        <div class="container is-rounded">
+            <div class="content">
+                <h2><strong>Расскажите о себе собеседнику</strong></h2>
+            </div>
+
+
+    <div class="columns">
+  <div class="column">
+    <div class="field">
+        <label class="label">Как вас зовут?*</label>
+        <div class="control">
+          <input class="input"  name="full_name" type="text" value={{form.full_name.value}} placeholder="Представьтесь собеседнику">
+
+        </div>
+      </div>
+  </div>
+  <div class="column">
+    <div class="field">
+        <label class="label">Email адрес для связи*</label>
+        <div class="control">
+
+            <input class="input" type="email" name="email" value={{form.email.value}}  id="id_email">
+        </div>
+      </div>
+  </div>
+
+</div>
+
+
+
+
+
+    </div>
+
+    <div class="container">
+        <div class="content">
+        <h3>Страна поиска собеседника</h3>
+            <p class="subtitle is-6">Если страна не указана, мы будем искать по всему миру</p>
+    </div>
+
+            <div class="select">
+              <select>
+                <option>Россия</option>
+                <option>USA</option>
+                <option>Белорусия</option>
+              </select>
+            </div>
+
+    </div>
+
+
+        <div class="content">
+            <h3>Как связаться со мной</h3>
+
+            <div class="columns">
+                <div class="column" >
+
+                    <div class="field">
+                        <label class="label">Twitter</label>
+                        <div class="control">
+                            <input class="input"   type="text"  placeholder="Ссылка на twitter-аккаунт">
+                        </div>
+                    </div>
+
+
+                    <div class="field">
+                        <label class="label">Facebook</label>
+                        <div class="control">
+                            <input class="input"   type="text"  placeholder="Ссылка на Facebook-аккаунт">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="column" >
+
+                    <div class="field">
+                        <label class="label">Telegram</label>
+                        <div class="control">
+                            <input class="input"   type="text"  placeholder="Ссылка на Telegram-аккаунт">
+                        </div>
+                    </div>
+
+
+
+                    <div class="field">
+                        <label class="label">Instagram</label>
+                        <div class="control">
+                            <input class="input"   type="text"  placeholder="Ссылка на Instagram-аккаунт">
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+
+
+        {% for cat in categoriess %}
+    {{ cat.category_title }}:<br>
+    {% for skill in skills %}
+
+
+        {% if cat.category_title == skill.skill_category %}
+            {% if skills_editing_profile != None %}
+                {% if skill.skill_title in skills_editing_profile_list %}
+                    <tr class='success'>
+                    <input type="checkbox" class="check_value" checked="checked" value='{{ skill.skill_title }}'/>{{ skill.skill_title }}
+                    </tr>
+                {% else %}
+                    <input type="checkbox" class="check_value" value='{{ skill.skill_title }}'/> {{ skill.skill_title }}
+                {% endif %}
+
+            {% else %}
+
+                <input type="checkbox" class="check_value" value='{{ skill.skill_title }}'/> {{ skill.skill_title }}
+
+            {% endif %}
+
+
+        {% endif %}
+
+    {% endfor %}
+
+    <br>
+    {% endfor %}
+
+
+
+    {% if skills_editing_profile != None %}
+    <input type="text" id="skills_list" name="skills_list" value="{{skills_editing_profile}}"/>
+    {% else %}
+    <input type="text" id="skills_list" name="skills_list" />
+    {% endif %}
+    <br>
+    <br>
+
+
+    <button class="button is-danger is-rounded" type="submit" >Найти мне собеседника</button>
+
+
+
+
+
+</form>
+
+
+{% endblock%}
+
+</body>
+</html>
+
+
+
+

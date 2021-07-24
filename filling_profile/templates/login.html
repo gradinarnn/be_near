@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+<html lang="en" xmlns:width="http://www.w3.org/1999/xhtml">
+<head>
+  {% load static %}
+
+    <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="{% static 'bulma/css/bulma.min.css' %}">
+    <title>Title</title>
+</head>
+<body >
+
+{% block content %}
+
+<div class="card" style="background:#F7F7F7" align="center">
+
+  <div class="card-content" style="width:482px; height:390px;background:#ffffff">
+
+    <div class="content" style="overflow:hidden">
+
+      <h1><strong>Login with just your email</strong></h1>
+    </div>
+
+    <div class="field" align="left">
+                        <label class="label">Email login</label>
+                        <div class="control">
+                            <input class="input"   type="email"  >
+                        </div>
+                    </div>
+    <button class="button is-link" type="submit" style="width: 100%">Email login link</button>
+  </div>
+</div>
+
+ {% endblock%}
+
+</body>
+</html>
