@@ -88,7 +88,7 @@ DATABASES = {
         'NAME': 'selectel',
         'USER' : 'selectel',
         'PASSWORD' : 'selectel',
-        'HOST' : 'pg_db',
+        'HOST' : 'localhost',
         'PORT' : '5432',
     }
 }
