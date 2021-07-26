@@ -88,7 +88,7 @@ DATABASES = {
         'NAME': 'selectel',
         'USER' : 'selectel',
         'PASSWORD' : 'selectel',
-        'HOST' : 'localhost',
+        'HOST' : '80.249.150.167',
         'PORT' : '5432',
     }
 }
