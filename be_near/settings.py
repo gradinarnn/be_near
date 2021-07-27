@@ -83,13 +83,16 @@ WSGI_APPLICATION = 'be_near.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'selectel',
-        'USER' : 'selectel',
-        'PASSWORD' : 'selectel',
-        'HOST' : '80.249.150.167',
-        'PORT' : '5432',
+'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'sqlite3.db',
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'selectel',
+    #     'USER' : 'selectel',
+    #     'PASSWORD' : 'selectel',
+    #     'HOST' : '80.249.150.167',
+    #     'PORT' : '5432',
     }
 }
 
