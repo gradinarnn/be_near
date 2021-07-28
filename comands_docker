@@ -2,5 +2,5 @@
  nano docker-compose.yml
  git clone https://github.com/gradinarnn/be_near.git
  docker-compose up
- docker rmi -f b2fcd079c1d4
+ docker rmi -f
  docker stop $(docker container ls -aq)
