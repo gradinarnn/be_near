@@ -20,6 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 PROJECT_ROOT = os.path.dirname(__file__)
 
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'filling_profile','templates')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -62,7 +64,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
 
-            os.path.join(PROJECT_ROOT/filling_profile,'templates'),
+            TEMPLATES_DIR,
 
 
         ],
