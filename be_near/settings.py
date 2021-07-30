@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-import filling_profile
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-deqw&ur^#h!yws3!^6#hhadj05fge$llt+77yqnk(xpuckjd26
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [ '80.249.150.167', ]
+ALLOWED_HOSTS = [ '80.249.150.167',  ]
 
 
 # Application definition
@@ -89,10 +89,10 @@ WSGI_APPLICATION = 'be_near.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'selectel',
-        'USER' : 'selectel',
-        'PASSWORD' : 'selectel',
-        'HOST' : 'pg_db',
+        'NAME': 'postgres',
+        'USER' : 'postgres',
+        'PASSWORD' : 'admin',
+        'HOST' : 'localhost',
         'PORT' : '5432',
     }
 }

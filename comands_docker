@@ -1,6 +1,7 @@
  rm -R be_near
  nano docker-compose.yml
  git clone https://github.com/gradinarnn/be_near.git
+ git clone https://github.com/gradinarnn/telegram_bot.git
  docker-compose up
  docker rmi -f
  docker stop $(docker container ls -aq)
