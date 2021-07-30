@@ -9,7 +9,7 @@ class Profile(models.Model):
     full_name = models.CharField('полнейшее имя', max_length=50, blank=True)
     email = models.CharField('email адрес', max_length=50, null=True, blank=True)
     id = models.AutoField(primary_key=True)
-    skills = models.CharField('навыки', max_length=50, null=True)
+    skills = models.CharField('навыки', max_length=150, null=True)
     goal = models.IntegerField('цель общенщения', default=None, null=True, blank=True)
     contacts = models.CharField('Telegram', max_length=15, default=[''], null=True, blank=True)
     language = models.CharField('язык', max_length=20, default='', null=True, blank=True)
