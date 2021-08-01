@@ -9,8 +9,8 @@
 
 
 
- docker build ~/telegram_bot
- docker run -d
+ docker build -t <name> ~/telegram_bot
+ docker run -d <IMAGE ID>
 
     #находение volume
   - postgres_data:/var/lib/postgresql/data
