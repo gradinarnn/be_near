@@ -5,3 +5,9 @@
  docker-compose up
  docker rmi -f
  docker stop $(docker container ls -aq)
+ docker exec -it <id> bash
+
+
+
+ docker build ~/telegram_bot
+ docker run -d
