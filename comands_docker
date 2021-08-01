@@ -11,3 +11,11 @@
 
  docker build ~/telegram_bot
  docker run -d
+
+    #находение volume
+  - postgres_data:/var/lib/postgresql/data
+
+
+    #удалить все volume
+    docker volume prune
+
