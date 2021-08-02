@@ -1,4 +1,5 @@
-Django==3.2.5
-psycopg2==2.9.1
+Django
+psycopg2
 pip
 PyJWT
+djangorestframework
