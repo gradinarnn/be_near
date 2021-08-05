@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
+from .auth_by_telegram import Auth_by_telegram
 from .models import Profile
 
 
@@ -17,11 +18,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
     # запросом на регистрацию. Сделаем его доступным только на чтение.
     token = serializers.CharField(max_length=255, read_only=True)
 
+    contacts = serializers.CharField(max_length=15)
+
     class Meta:
         model = Profile
         # Перечислить все поля, которые могут быть включены в запрос
         # или ответ, включая поля, явно указанные выше.
-        fields = ['email', 'full_name', 'password', 'token']
+        fields = ['email', 'full_name', 'password', 'token', 'contacts']
 
     def create(self, validated_data):
         # Использовать метод create_user, который мы
@@ -29,52 +32,41 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return Profile.objects.create_user(**validated_data)
 
 
+
+
 class LoginSerializer(serializers.Serializer):
-    email = serializers.CharField(max_length=255)
-    full_name = serializers.CharField(max_length=255, read_only=True)
-    password = serializers.CharField(max_length=128, write_only=True)
-    token = serializers.CharField(max_length=255, read_only=True)
+
+    #user_id из Telegram
+    contacts = serializers.CharField(max_length=15)
+
+    class Meta:
+        model = Profile
+        fields = ['email', 'full_name', 'password', 'token', 'contacts']
 
     def validate(self, data):
-        # В методе validate мы убеждаемся, что текущий экземпляр
-        # LoginSerializer значение valid. В случае входа пользователя в систему
-        # это означает подтверждение того, что присутствуют адрес электронной
-        # почты и то, что эта комбинация соответствует одному из пользователей.
 
-        password = data.get('password', None)
-        email = data.get('email', None)
+        contacts = data.get('contacts', None)
 
-        # Вызвать исключение, если не предоставлена почта.
+        # Метод authenticate представляет собой кастомную аутентификацию по user_id из Telegram.
+        # Об этом говорит строка
+        # AUTHENTICATION_BACKENDS = ('filling_profile.auth_by_telegram.Auth_by_telegram',) в settings.py
+        # Реализация метода прописана в auth_by_telegram.py
+        user = authenticate(self, contacts=contacts)
 
-        if email is None:
-            raise serializers.ValidationError(
-                'An email address is required to log in.'
-            )
 
-        # Вызвать исключение, если не предоставлен пароль.
-        if password is None:
-            raise serializers.ValidationError(
-                'A password is required to log in.'
-            )
-
-        # Метод authenticate предоставляется Django и выполняет проверку, что
-        # предоставленные почта и пароль соответствуют какому-то пользователю в
-        # нашей базе данных. Мы передаем email как username, так как в модели
-        # пользователя USERNAME_FIELD = email.
-        user = authenticate(email=email, password=password)
-
-        # Если пользователь с данными почтой/паролем не найден, то authenticate
+        # Если пользователь с данными user_id не найден, то authenticate
         # вернет None. Возбудить исключение в таком случае.
         if user is None:
             raise serializers.ValidationError(
-                'A user with this email and password was not found.'
+                'A user with this Telegram user_id was not found.'
             )
 
-        # Метод validate должен возвращать словать проверенных данных. Это
+        # Метод validate должен возвращать словарь проверенных данных. Это
         # данные, которые передются в т.ч. в методы create и update.
         return {
             'email': user.email,
             'username': user.full_name,
+            'contacts': user.contacts,
             'token': user.token
         }
 

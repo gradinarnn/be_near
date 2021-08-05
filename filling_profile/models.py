@@ -18,7 +18,7 @@ class UserManager(BaseUserManager):
     же самого кода, который Django использовал для создания User (для демонстрации).
     """
 
-    def create_user(self, full_name, email, password=None):
+    def create_user(self, full_name, email, password=None, contacts=None):
         """ Создает и возвращает пользователя с имэйлом, паролем и именем. """
         if full_name is None:
             raise TypeError('Users must have a username.')
@@ -26,7 +26,7 @@ class UserManager(BaseUserManager):
         if email is None:
             raise TypeError('Users must have an email address.')
 
-        user = self.model(full_name=full_name, email=self.normalize_email(email))
+        user = self.model(full_name=full_name, email=self.normalize_email(email), contacts=contacts)
         user.set_password(password)
         user.save()
 
@@ -66,6 +66,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name']
+
 
     # Сообщает Django, что определенный выше класс UserManager
     # должен управлять объектами этого типа.

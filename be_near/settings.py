@@ -120,6 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = ('filling_profile.auth_by_telegram.Auth_by_telegram',)
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'exceptions.core_exception_handler',

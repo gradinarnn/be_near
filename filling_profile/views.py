@@ -106,8 +106,8 @@ class RegistrationAPIView(APIView):
         serializer = self.serializer_class(data=profile)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class LoginAPIView(APIView):
     permission_classes = (AllowAny,)
@@ -116,12 +116,12 @@ class LoginAPIView(APIView):
 
     def post(self, request):
         user = request.data.get('profile', {})
-        print(user)
 
         # Обратите внимание, что мы не вызываем метод save() сериализатора, как
         # делали это для регистрации. Дело в том, что в данном случае нам
         # нечего сохранять. Вместо этого, метод validate() делает все нужное.
         serializer = self.serializer_class(data=user)
+
         serializer.is_valid(raise_exception=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -133,9 +133,8 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
 
-
-
-    def retrieve(self, request, *args, **kwargs): #работает по запросу GET
+    # работает по запросу GET
+    def retrieve(self, request, *args, **kwargs):
         # Здесь нечего валидировать или сохранять. Мы просто хотим, чтобы
         # сериализатор обрабатывал преобразования объекта User во что-то, что
         # можно привести к json и вернуть клиенту.
@@ -144,6 +143,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # работает по запросу PUTCH
     def update(self, request, *args, **kwargs):
         serializer_data = request.data.get('profile', {})
         print(f'view update serializer_data:-----{serializer_data}--------')
