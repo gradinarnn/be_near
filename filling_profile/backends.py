@@ -27,17 +27,11 @@ class JWTAuthentication(authentication.BaseAuthentication):
         """
         request.profile = None
 
-
-
         # 'auth_header' должен быть массивом с двумя элементами:
         # 1) именем заголовка аутентификации (Token в нашем случае)
         # 2) сам JWT, по которому мы должны пройти аутентифкацию
         auth_header = authentication.get_authorization_header(request).split()
         auth_header_prefix = self.authentication_header_prefix.lower()
-
-
-
-
 
         if not auth_header:
             return None
@@ -58,7 +52,6 @@ class JWTAuthentication(authentication.BaseAuthentication):
         prefix = auth_header[0].decode('utf-8')
         token = auth_header[1].decode('utf-8')
 
-
         if prefix.lower() != auth_header_prefix:
             # Префикс заголовка не тот, который мы ожидали - отказ.
             return None
@@ -74,9 +67,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
         """
 
         try:
-            print(f'backend token:---------------{token}------------------')
             payload = jwt.decode(token, 'q', algorithms="HS256")
-            print(f'''backend payload['id']:---------------{payload['id']}------------------''')
         except Exception:
             msg = 'Ошибка аутентификации. Невозможно декодировать токеню'
             raise exceptions.AuthenticationFailed(msg)
@@ -86,8 +77,5 @@ class JWTAuthentication(authentication.BaseAuthentication):
         except Profile.DoesNotExist:
             msg = 'Пользователь соответствующий данному токену не найден.'
             raise exceptions.AuthenticationFailed(msg)
-
-        print(f'''backend user:---------------{user}------------------''')
-
 
         return (user, token)
