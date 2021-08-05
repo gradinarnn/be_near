@@ -105,7 +105,6 @@ class Profile(AbstractBaseUser, PermissionsMixin):
             "id": self.pk,
             # "exp": int(dt.strftime('%S'))
         }, 'q', algorithm='HS256')
-        print(f'---------------{token}------------------')
 
         return token
 

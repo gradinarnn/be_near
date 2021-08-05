@@ -93,22 +93,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """ Выполняет обновление User. """
-        print(f'serializers update validated_data:-----{validated_data}--------')
-        # В отличие от других полей, пароли не следует обрабатывать с помощью
-        # setattr. Django предоставляет функцию, которая обрабатывает пароли
-        # хешированием и 'солением'. Это означает, что нам нужно удалить поле
-        # пароля из словаря 'validated_data' перед его использованием далее.
-        password = validated_data.pop('password', None)
-        print(f'serializers update password:-----{password}--------')
-        print(f'serializers update validated_data:-----{validated_data}--------')
 
-        print(f'serializers update instance:-----{instance}--------')
+
+        password = validated_data.pop('password', None)
 
         for key, value in validated_data.items():
             # Для ключей, оставшихся в validated_data мы устанавливаем значения
             # в текущий экземпляр User по одному.
             setattr(instance, key, value)
-        print(f'serializers update instance:-----{instance}--------')
+
         if password is not None:
             # 'set_password()' решает все вопросы, связанные с безопасностью
             # при обновлении пароля, потому нам не нужно беспокоиться об этом.
@@ -118,6 +111,5 @@ class UserSerializer(serializers.ModelSerializer):
         # User. Стоит отметить, что set_password() не сохраняет модель.
         instance.save()
 
-        print(f'serialaizer:-----{instance.password}--------')
         return instance
 

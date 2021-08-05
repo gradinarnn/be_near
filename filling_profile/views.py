@@ -117,9 +117,6 @@ class LoginAPIView(APIView):
     def post(self, request):
         user = request.data.get('profile', {})
 
-        # Обратите внимание, что мы не вызываем метод save() сериализатора, как
-        # делали это для регистрации. Дело в том, что в данном случае нам
-        # нечего сохранять. Вместо этого, метод validate() делает все нужное.
         serializer = self.serializer_class(data=user)
 
         serializer.is_valid(raise_exception=True)
@@ -143,18 +140,13 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # работает по запросу PUTCH
+    # работает по запросу PATCH
     def update(self, request, *args, **kwargs):
         serializer_data = request.data.get('profile', {})
-        print(f'view update serializer_data:-----{serializer_data}--------')
-        print(f'view update request.user:-----{request.user}--------')
         # Паттерн сериализации, валидирования и сохранения - то, о чем говорили
         serializer = self.serializer_class(
             request.user, data=serializer_data, partial=True
         )
-        # serializer= self.serializer_class.update(self, request.user, )
-        print(f'view update serializer:-----{serializer}--------')
         serializer.is_valid(raise_exception=True)
-        print(f'view update serializer.is_valid:-----{serializer.is_valid(raise_exception=True)}--------')
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
