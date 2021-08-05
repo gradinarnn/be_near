@@ -2,14 +2,15 @@
 from django.shortcuts import render
 from rest_framework.generics import RetrieveUpdateAPIView
 
-from .models import Profile, Skills, Categories
-from .forms import Filling_Profile_form
+
 
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .forms import Filling_Profile_form
+from .models import Profile, Skills, Categories
 from .renderers import UserJSONRenderer
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer,
@@ -132,22 +133,28 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
 
-    def retrieve(self, request, *args, **kwargs):
+
+
+    def retrieve(self, request, *args, **kwargs): #работает по запросу GET
         # Здесь нечего валидировать или сохранять. Мы просто хотим, чтобы
         # сериализатор обрабатывал преобразования объекта User во что-то, что
         # можно привести к json и вернуть клиенту.
-        serializer = self.serializer_class(request.profile)
+        user = request.data.get('profile', {})
+        serializer = self.serializer_class(user)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         serializer_data = request.data.get('profile', {})
-
+        print(f'view update serializer_data:-----{serializer_data}--------')
+        print(f'view update request.user:-----{request.user}--------')
         # Паттерн сериализации, валидирования и сохранения - то, о чем говорили
         serializer = self.serializer_class(
-            request.profile, data=serializer_data, partial=True
+            request.user, data=serializer_data, partial=True
         )
+        # serializer= self.serializer_class.update(self, request.user, )
+        print(f'view update serializer:-----{serializer}--------')
         serializer.is_valid(raise_exception=True)
+        print(f'view update serializer.is_valid:-----{serializer.is_valid(raise_exception=True)}--------')
         serializer.save()
-
         return Response(serializer.data, status=status.HTTP_200_OK)

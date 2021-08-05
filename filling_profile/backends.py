@@ -8,7 +8,7 @@ from .models import Profile
 
 
 class JWTAuthentication(authentication.BaseAuthentication):
-    authentication_header_prefix = 'Token'
+    authentication_header_prefix = 'Bearer'
 
     def authenticate(self, request):
         """
@@ -16,7 +16,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
         ли того эндпоинт аутентификации. 'authenticate' имеет два возможных
         возвращаемых значения:
             1) None - мы возвращаем None если не хотим аутентифицироваться.
-            Обычно это означает, что мы значем, что аутентификация не удастся.
+            Обычно это означает, что мы значем, что аутентификация неудастся.
             Примером этого является, например, случай, когда токен не включен в
             заголовок.
             2) (user, token) - мы возвращаем комбинацию пользователь/токен
@@ -27,11 +27,17 @@ class JWTAuthentication(authentication.BaseAuthentication):
         """
         request.profile = None
 
+
+
         # 'auth_header' должен быть массивом с двумя элементами:
         # 1) именем заголовка аутентификации (Token в нашем случае)
         # 2) сам JWT, по которому мы должны пройти аутентифкацию
         auth_header = authentication.get_authorization_header(request).split()
         auth_header_prefix = self.authentication_header_prefix.lower()
+
+
+
+
 
         if not auth_header:
             return None
@@ -52,6 +58,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
         prefix = auth_header[0].decode('utf-8')
         token = auth_header[1].decode('utf-8')
 
+
         if prefix.lower() != auth_header_prefix:
             # Префикс заголовка не тот, который мы ожидали - отказ.
             return None
@@ -65,8 +72,11 @@ class JWTAuthentication(authentication.BaseAuthentication):
         Попытка аутентификации с предоставленными данными. Если успешно -
         вернуть пользователя и токен, иначе - сгенерировать исключение.
         """
+
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY)
+            print(f'backend token:---------------{token}------------------')
+            payload = jwt.decode(token, 'q', algorithms="HS256")
+            print(f'''backend payload['id']:---------------{payload['id']}------------------''')
         except Exception:
             msg = 'Ошибка аутентификации. Невозможно декодировать токеню'
             raise exceptions.AuthenticationFailed(msg)
@@ -77,6 +87,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
             msg = 'Пользователь соответствующий данному токену не найден.'
             raise exceptions.AuthenticationFailed(msg)
 
+        print(f'''backend user:---------------{user}------------------''')
 
 
         return (user, token)

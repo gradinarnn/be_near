@@ -101,9 +101,10 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         dt = datetime.now() + timedelta(days=30)
 
         token = jwt.encode({
-            'id': self.pk,
-            'exp': int(dt.strftime('%S'))
-        }, settings.SECRET_KEY, algorithm='HS256')
+            "id": self.pk,
+            # "exp": int(dt.strftime('%S'))
+        }, 'q', algorithm='HS256')
+        print(f'---------------{token}------------------')
 
         return token
 
