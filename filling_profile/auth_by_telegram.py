@@ -1,14 +1,13 @@
-
 from django.contrib.auth import get_user_model
-
+from rest_framework import exceptions
 
 
 class Auth_by_telegram(object):
     def authenticate(self, request, contacts=None):
 
-        user = get_user_model().objects.get(contacts=contacts)
+        try:
+            profile = get_user_model().objects.get(contacts=contacts) #получаем profile по user_id Telegram'a
+        except get_user_model().DoesNotExist:
+            raise exceptions.AuthenticationFailed('No such user')  #если profile не найден
 
-        if user is None:
-            return None
-        else:
-            return user
+        return profile

@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'filling_profile',
     'be_near',
+    'telegram_bot_help',
+
 ]
 
 MIDDLEWARE = [
