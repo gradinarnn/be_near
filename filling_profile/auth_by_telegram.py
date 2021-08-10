@@ -8,6 +8,6 @@ class Auth_by_telegram(object):
         try:
             profile = get_user_model().objects.get(contacts=contacts) #получаем profile по user_id Telegram'a
         except get_user_model().DoesNotExist:
-            raise exceptions.AuthenticationFailed('No such user')  #если profile не найден
+            profile = None
 
         return profile

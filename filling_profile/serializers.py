@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
+import be_near.constants
 from .models import Profile
 
 
@@ -31,43 +32,56 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return Profile.objects.create_user(**validated_data)
 
 
-
-
 class LoginSerializer(serializers.Serializer):
-
-    #user_id из Telegram
+    # user_id из Telegram
     contacts = serializers.CharField(max_length=15)
+    machine_token = serializers.CharField(max_length=20, write_only=True)
+    meeting_status = serializers.CharField(max_length=20, read_only=True)
+    token = serializers.CharField(max_length=20, read_only=True)
+    full_name = serializers.CharField(max_length=50, read_only=True)
+    email = serializers.CharField(max_length=50, read_only=True)
 
     class Meta:
         model = Profile
         fields = ['email', 'full_name', 'password', 'token', 'contacts']
 
     def validate(self, data):
-
         contacts = data.get('contacts', None)
+        machine_token = data.get('machine_token', None)
 
-        # Метод authenticate представляет собой кастомную аутентификацию по user_id из Telegram.
-        # Об этом говорит строка
-        # AUTHENTICATION_BACKENDS = ('filling_profile.auth_by_telegram.Auth_by_telegram',) в settings.py
-        # Реализация метода прописана в auth_by_telegram.py
-        user = authenticate(self, contacts=contacts)
+        if machine_token == be_near.constants.a:
 
-        print(f'LoginSerializer: user = {user}')
-        # Если пользователь с данными user_id не найден, то authenticate
-        # вернет None. Возбудить исключение в таком случае.
-        if user is None:
-            raise serializers.ValidationError(
-                'A user with this Telegram user_id was not found.'
-            )
+            # Метод authenticate представляет собой кастомную аутентификацию по user_id из Telegram.
+            # Об этом говорит строка
+            # AUTHENTICATION_BACKENDS = ('filling_profile.auth_by_telegram.Auth_by_telegram',) в settings.py
+            # Реализация метода прописана в auth_by_telegram.py
+            user = authenticate(self, contacts=contacts)
 
-        # Метод validate должен возвращать словарь проверенных данных. Это
-        # данные, которые передются в т.ч. в методы create и update.
-        return {
-            'email': user.email,
-            'username': user.full_name,
-            'contacts': user.contacts,
-            'token': user.token
-        }
+            print(f'-----------LoginSerializer: user = {user}')
+            # Если пользователь с данными user_id не найден, то authenticate
+            # вернет None. Возбудить исключение в таком случае.
+            if user is None:
+                raise serializers.ValidationError(
+                    'A user with this Telegram user_id was not found.'
+                )
+
+            # Метод validate должен возвращать словарь проверенных данных. Это
+            # данные, которые передются в т.ч. в методы create и update.
+
+            return {
+                'email': user.email,
+                'username': user.full_name,
+                'contacts': user.contacts,
+                'token': user.token,
+                'meeting_status': user.meeting_status
+
+            }
+        else:
+            return {
+                'contacts': 'Not found'
+
+            }
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -93,7 +107,6 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """ Выполняет обновление User. """
 
-
         # password = validated_data.pop('password', None)
 
         for key, value in validated_data.items():
@@ -111,4 +124,3 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
-
