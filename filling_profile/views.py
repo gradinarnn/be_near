@@ -1,6 +1,7 @@
 import bz2
 import gzip
 
+import jwt
 import requests
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from django.shortcuts import render
@@ -17,48 +18,57 @@ from .renderers import UserJSONRenderer
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer,
 )
-from telegram_bot_help.keyboards.inline_buttons import change_profile_or_status_button
 
 
 def index(request):
-    if request.method == 'GET':
-        full_name = request.GET.get('full_name')
-        editing_profile = Profile.objects.filter(full_name=full_name).exists()
 
-        if editing_profile:
-            data = {"full_name": Profile.objects.get(full_name=full_name).full_name,
-                    "email": Profile.objects.get(full_name=full_name).email,
-                    "goal": Profile.objects.get(full_name=full_name).goal,
-                    "language": Profile.objects.get(full_name=full_name).language,
-                    "contacts": Profile.objects.get(full_name=full_name).contacts}
+    token = request.GET.get('token')
+    if token != None:
+        contacts = request.GET.get('contacts')
+
+
+        payload = jwt.decode(token, 'q', algorithms="HS256")
+        user = Profile.objects.get(pk=payload['id'])
+
+        print(f'---------view index user.contacts:{user.contacts}-------------------')
+        print(f'---------view index contacts:{contacts}-------------------')
+        print(f'---------view index user:{user}-------------------')
+
+
+
+        if user.contacts==contacts:
+            data = {"full_name": user.full_name,
+                    "email": user.email,
+                    "goal": user.goal,
+                    "language": user.language,
+                    "contacts": user.contacts}
 
             form = Filling_Profile_form(data)
-            skills_editing_profile = Profile.objects.get(full_name=full_name).skills
+            skills_editing_profile = user.skills
             if skills_editing_profile != None:
                 skills_editing_profile_list = skills_editing_profile.split(',')
             else:
                 skills_editing_profile_list = ''
-            form.full_name = Profile.objects.get(full_name=full_name).full_name
-            a = Profile.objects.get(full_name=full_name)
+            form.full_name = user.full_name
+            a = user
             form.email = a.email
             print(f'-----------------{form.full_name}------{form.email}--------------------------')
 
 
-        else:
-            form = Filling_Profile_form(request.GET)
-            skills_editing_profile = None
-            skills_editing_profile_list = None
-            form.full_name = request.GET.get('full_name')
-            form.email = request.GET.get('email')
-            form.contacts = request.GET.get('contacts')
 
-        skills = Skills.objects.all()
-        categoriess = Categories.objects.all()
+    else:
+        form = Filling_Profile_form
+        skills_editing_profile_list = ''
+        skills_editing_profile = ''
+    skills = Skills.objects.all()
+    categoriess = Categories.objects.all()
 
     return render(request, 'filling_profile/profile_form.html',
-                  {'form': form, 'skills': skills, 'categoriess': categoriess,
-                   'skills_editing_profile': skills_editing_profile,
-                   'skills_editing_profile_list': skills_editing_profile_list})
+              {'form': form, 'skills': skills, 'categoriess': categoriess,
+               'skills_editing_profile': skills_editing_profile,
+               'skills_editing_profile_list': skills_editing_profile_list})
+
+
 
 
 def press_ok(request):
