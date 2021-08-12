@@ -101,6 +101,56 @@ def login(request):
     return render(request, 'login.html')
 
 
+def meeting(request):
+
+    all_profiles = Profile.objects.all().filter(meeting_status = "waitting")
+
+    print(f'----------MeetingAPIView all_profiles:{all_profiles}-------------')
+
+
+   
+    # while len(all_profiles) > 0:
+    #     print(f'-------------Весь список до взятия первого: {all_profiles}---------------------')
+    #     first_profile = all_profiles.pop(0)
+    #     print(f'-------------Первый пользователь: {first_profile[1]}---------------------')
+    #     print(f'-------------Весь список после взятия первого: {all_profiles}---------------------')
+
+    #     selection_list=all_profiles.copy()
+
+    #     meeting_success=False
+    #     while (len(selection_list) > 0) and (not meeting_success):
+    #         second_profile_number = randint(0, len(selection_list) - 1)
+    #         second_profile = selection_list[second_profile_number]
+    #         print(f'-------------Второй пользователь: {second_profile[1]}-------------------')
+    #         print(f'-------------Весь список после взятия второго: {all_profiles}---------------------')
+
+    #         # if ..... проверка встречались ли first_profile и second_profile до этого
+
+    #         meeting_list = await pg_db.select_meet_list(first_profile[1])
+
+    #         meeting_indicator = False
+    #         for meet in meeting_list:
+
+    #             if second_profile[1] == meet[6]:
+    #                 meeting_indicator = True
+    #                 print(f'-------------meeting_indicator = True. А весь список при этом: {all_profiles}---------------------')
+
+
+    #         if meeting_indicator == False:
+    #             print(f'------------Пара сформирована--------------')
+    #             await pg_db.add_meet(first_profile[1], second_profile[1], date_meeting=datetime.datetime.now())
+    #             meeting_success=True
+    #         else:
+    #             selection_list.pop(second_profile_number)
+    #             print(f'------------Такая пара уже была--------------')
+    #             print(f'-------------А весь список при этом: {all_profiles}---------------------')
+
+    #     if meeting_success == True:
+    #         print(f'-------------Удаляем пользователя: {all_profiles[second_profile_number]}---------------------')
+    #         all_profiles.pop(second_profile_number)
+
+
+
 class RegistrationAPIView(APIView):
     """
     Разрешить всем пользователям (аутентифицированным и нет) доступ к данному эндпоинту.
