@@ -114,6 +114,9 @@ class UserSerializer(serializers.ModelSerializer):
             # в текущий экземпляр User по одному.
             setattr(instance, key, value)
 
+        if instance.meeting_status == 'waitting':
+                print(f'-----UserSerializer instance.meeting_status ={instance.meeting_status}----------')
+
         # if password is not None:
         #     # 'set_password()' решает все вопросы, связанные с безопасностью
         #     # при обновлении пароля, потому нам не нужно беспокоиться об этом.

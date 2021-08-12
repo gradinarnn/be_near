@@ -1,5 +1,7 @@
 import bz2
+import datetime
 import gzip
+import random
 
 import jwt
 import requests
@@ -13,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .forms import Filling_Profile_form
-from .models import Profile, Skills, Categories
+from .models import Meet, Profile, Profile_for_Metting, Skills, Categories
 from .renderers import UserJSONRenderer
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer,
@@ -103,51 +105,54 @@ def login(request):
 
 def meeting(request):
 
-    all_profiles = Profile.objects.all().filter(meeting_status = "waitting")
-
-    print(f'----------MeetingAPIView all_profiles:{all_profiles}-------------')
-
-
+    all_profiles = Profile_for_Metting.objects.all()
    
-    # while len(all_profiles) > 0:
-    #     print(f'-------------Весь список до взятия первого: {all_profiles}---------------------')
-    #     first_profile = all_profiles.pop(0)
-    #     print(f'-------------Первый пользователь: {first_profile[1]}---------------------')
-    #     print(f'-------------Весь список после взятия первого: {all_profiles}---------------------')
+    while len(all_profiles) > 0:
+        print(f'-------------Весь список до взятия первого: {all_profiles}---------------------')
+        all_profiles = list(all_profiles)
+        print(f'-------------all_profiles list: {all_profiles}---------------------')
+        first_profile = all_profiles.pop(0)
+        print(f'-------------Первый пользователь: {first_profile}---------------------')
+        print(f'-------------Весь список после взятия первого: {all_profiles}---------------------')
 
-    #     selection_list=all_profiles.copy()
+        selection_list=all_profiles.copy()
 
-    #     meeting_success=False
-    #     while (len(selection_list) > 0) and (not meeting_success):
-    #         second_profile_number = randint(0, len(selection_list) - 1)
-    #         second_profile = selection_list[second_profile_number]
-    #         print(f'-------------Второй пользователь: {second_profile[1]}-------------------')
-    #         print(f'-------------Весь список после взятия второго: {all_profiles}---------------------')
+        meeting_success=False
+        while (len(selection_list) > 0) and (not meeting_success):
+            second_profile_number = random.randint(0, len(selection_list) - 1)
+            second_profile = selection_list.pop(second_profile_number)
+            print(f'-------------Второй пользователь: {second_profile}-------------------')
+            print(f'-------------Весь список после взятия второго: {all_profiles}---------------------')
+            print(f'-------------Cписок в котором ищется второй: {selection_list}---------------------')
 
-    #         # if ..... проверка встречались ли first_profile и second_profile до этого
-
-    #         meeting_list = await pg_db.select_meet_list(first_profile[1])
-
-    #         meeting_indicator = False
-    #         for meet in meeting_list:
-
-    #             if second_profile[1] == meet[6]:
-    #                 meeting_indicator = True
-    #                 print(f'-------------meeting_indicator = True. А весь список при этом: {all_profiles}---------------------')
+            # if ..... проверка встречались ли first_profile и second_profile до этого
 
 
-    #         if meeting_indicator == False:
-    #             print(f'------------Пара сформирована--------------')
-    #             await pg_db.add_meet(first_profile[1], second_profile[1], date_meeting=datetime.datetime.now())
-    #             meeting_success=True
-    #         else:
-    #             selection_list.pop(second_profile_number)
-    #             print(f'------------Такая пара уже была--------------')
-    #             print(f'-------------А весь список при этом: {all_profiles}---------------------')
+            meeting_list =list(Meet.objects.all().filter(first_profile_id = first_profile.id))+list(Meet.objects.all().filter(second_profile_id = first_profile.id))
+            
+            print(f'-------------Список в котором {first_profile} есть: {meeting_list}---------------------')
 
-    #     if meeting_success == True:
-    #         print(f'-------------Удаляем пользователя: {all_profiles[second_profile_number]}---------------------')
-    #         all_profiles.pop(second_profile_number)
+            meeting_indicator = False
+            for meet in meeting_list:
+
+                if (second_profile.id == meet.first_profile_id) or (second_profile.id == meet.second_profile_id):
+                    meeting_indicator = True
+                    print(f'-------------meeting_indicator = {meeting_indicator}. А весь список при этом: {all_profiles}---------------------')
+
+
+            if meeting_indicator == False:
+                print(f'------------Пара сформирована--------------')
+                meeting  = Meet(first_profile_id=first_profile.id, date_meeting=datetime.datetime.now(), second_profile_id = second_profile.id)
+                meeting.save
+                meeting_success=True
+            else:
+                
+                print(f'------------Такая пара уже была--------------')
+                print(f'-------------А весь список при этом: {all_profiles}---------------------')
+
+        if meeting_success == True:
+            print(f'-------------Удаляем пользователя: {all_profiles[second_profile_number]}---------------------')
+            all_profiles.pop(second_profile_number)
 
 
 
