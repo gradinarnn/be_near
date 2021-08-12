@@ -122,7 +122,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = ('filling_profile.auth_by_telegram.Auth_by_telegram',)
+AUTHENTICATION_BACKENDS = (
+    'filling_profile.auth_by_telegram.Auth_by_telegram',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'exceptions.core_exception_handler',

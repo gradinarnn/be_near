@@ -38,7 +38,9 @@ class UserManager(BaseUserManager):
             raise TypeError('Superusers must have a password.')
 
         user = self.create_user(full_name, email, password)
+        user.set_password(password)
         user.is_superuser = True
+        user.is_staff = True
         user.save()
 
         return user
@@ -57,6 +59,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     contacts = models.CharField('Telegram', max_length=15, default=[''], null=True, blank=True)
     language = models.CharField('язык', max_length=20, default='', null=True, blank=True)
     meeting_status = models.CharField(max_length=20, default="not ready", null=True)
+    is_staff = models.BooleanField(default=False)
 
     def __str__(self):
         return self.full_name
