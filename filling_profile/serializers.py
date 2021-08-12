@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 import be_near.constants
-from .models import Profile
+from .models import Profile, Profile_for_Metting
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -83,7 +83,6 @@ class LoginSerializer(serializers.Serializer):
             }
 
 
-
 class UserSerializer(serializers.ModelSerializer):
     """ Ощуществляет сериализацию и десериализацию объектов User. """
 
@@ -115,7 +114,9 @@ class UserSerializer(serializers.ModelSerializer):
             setattr(instance, key, value)
 
         if instance.meeting_status == 'waitting':
-                print(f'-----UserSerializer instance.meeting_status ={instance.meeting_status}----------')
+            profile_for_meeting = Profile_for_Metting(profile=Profile.objects.get(contacts=instance.contacts))
+            #sdfdfg
+            profile_for_meeting.save()
 
         # if password is not None:
         #     # 'set_password()' решает все вопросы, связанные с безопасностью
