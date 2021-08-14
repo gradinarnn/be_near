@@ -1,5 +1,6 @@
 import bz2
 import datetime
+import json
 from filling_profile.send_notification import send_MEET_notification
 import gzip
 import random
@@ -149,6 +150,36 @@ def meeting(request):
 
                 
                 send_MEET_notification(first_profile.profile_id,second_profile.profile_id)
+
+                # меняем статус встречи первого пользователя на "meeting"
+                token_value = Profile.objects.get(id =first_profile.profile_id).token
+                payload_data = {"meeting_status":"meetting"}
+                payload_dict = {"profile":payload_data}
+                payload = json.dumps(payload_dict)
+
+                url = "http://127.0.0.1:8000/filling_profile/user/"
+                token = 'Bearer '+token_value
+                headers = {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                }
+                response = requests.request("PATCH", url, headers=headers, data=payload)
+
+                # меняем статус встречи второго пользователя на "meeting"
+                token_value = Profile.objects.get(id =second_profile.profile_id).token
+                payload_data = {"meeting_status":"meetting"}
+                payload_dict = {"profile":payload_data}
+                payload = json.dumps(payload_dict)
+
+                url = "http://127.0.0.1:8000/filling_profile/user/"
+                token = 'Bearer '+token_value
+                headers = {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                }
+                response = requests.request("PATCH", url, headers=headers, data=payload)
+
+                
 
                 meeting_success=True
             else:
