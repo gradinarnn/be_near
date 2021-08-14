@@ -1,5 +1,6 @@
 import bz2
 import datetime
+from filling_profile.send_notification import send_MEET_notification
 import gzip
 import random
 
@@ -145,7 +146,10 @@ def meeting(request):
                 meeting  = Meet(first_profile=first_profile, second_profile = second_profile)
                 print(f'----meeting:{meeting}--------------')
                 meeting.save()
+
                 
+                send_MEET_notification(first_profile.profile_id,second_profile.profile_id)
+
                 meeting_success=True
             else:
                 
