@@ -113,18 +113,23 @@ class UserSerializer(serializers.ModelSerializer):
             # в текущий экземпляр User по одному.
             setattr(instance, key, value)
 
-        if instance.meeting_status == 'waitting':
+        
+        try:
+            profile= Profile_for_Metting.objects.get(profile=Profile.objects.get(contacts=instance.contacts))
+            profile_exist=True
+            print(f'Профиль найден')
+        except Profile_for_Metting.DoesNotExist:
+            profile_exist=False
+            print(f'Профиль не найден')
+
+
+        if (instance.meeting_status == 'waitting') and (profile_exist==False):
             profile_for_meeting = Profile_for_Metting(profile=Profile.objects.get(contacts=instance.contacts))
-            #sdfdfg
             profile_for_meeting.save()
 
-        # if password is not None:
-        #     # 'set_password()' решает все вопросы, связанные с безопасностью
-        #     # при обновлении пароля, потому нам не нужно беспокоиться об этом.
-        #     instance.set_password(password)
+        elif (instance.meeting_status == 'not ready') and (profile_exist==True):
+            Profile_for_Metting.objects.filter(profile=Profile.objects.get(contacts=instance.contacts)).delete()
 
-        # После того, как все было обновлено, мы должны сохранить наш экземпляр
-        # User. Стоит отметить, что set_password() не сохраняет модель.
         instance.save()
 
         return instance

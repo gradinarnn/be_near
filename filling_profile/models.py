@@ -144,9 +144,8 @@ class Profile_for_Metting(models.Model):
 
 class Meet(models.Model):
     id = models.AutoField(primary_key=True)
-    first_profile = models.ForeignKey(Profile, on_delete=CASCADE, related_name='first_profile_id', blank=True)
-    second_profile = models.ForeignKey(Profile, on_delete=CASCADE, related_name='second_profile_id', blank=True)
-    meet_id = models.CharField(max_length=10, null=True)
+    first_profile = models.ForeignKey(Profile_for_Metting, on_delete=CASCADE, related_name='first_profile_id', blank=True)
+    second_profile = models.ForeignKey(Profile_for_Metting, on_delete=CASCADE, related_name='second_profile_id', blank=True)
     date_meeting = models.DateField(default=datetime.now(), null=True)
     feedback = models.CharField(max_length=10, null=True)
     goal_id = models.CharField(max_length=10, null=True)

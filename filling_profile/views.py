@@ -112,7 +112,7 @@ def meeting(request):
         all_profiles = list(all_profiles)
         print(f'-------------all_profiles list: {all_profiles}---------------------')
         first_profile = all_profiles.pop(0)
-        print(f'-------------Первый пользователь: {first_profile}---------------------')
+        print(f'-------------Первый пользователь: {first_profile.id}---------------------')
         print(f'-------------Весь список после взятия первого: {all_profiles}---------------------')
 
         selection_list=all_profiles.copy()
@@ -139,11 +139,13 @@ def meeting(request):
                     meeting_indicator = True
                     print(f'-------------meeting_indicator = {meeting_indicator}. А весь список при этом: {all_profiles}---------------------')
 
-
+            print(f'-------------meeting_indicator: {meeting_indicator}---------------------')
             if meeting_indicator == False:
                 print(f'------------Пара сформирована--------------')
-                meeting  = Meet(first_profile_id=first_profile.id, date_meeting=datetime.datetime.now(), second_profile_id = second_profile.id)
-                meeting.save
+                meeting  = Meet(first_profile=first_profile, second_profile = second_profile)
+                print(f'----meeting:{meeting}--------------')
+                meeting.save()
+                
                 meeting_success=True
             else:
                 
