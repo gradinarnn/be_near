@@ -1,8 +1,8 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-
+import requests
 import be_near.constants
-from .models import Profile, Profile_for_Metting
+from .models import Meet, Profile, Profile_for_Metting
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -40,10 +40,11 @@ class LoginSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=20, read_only=True)
     full_name = serializers.CharField(max_length=50, read_only=True)
     email = serializers.CharField(max_length=50, read_only=True)
+    companion = serializers.CharField(max_length=25,read_only=True)
 
     class Meta:
         model = Profile
-        fields = ['email', 'full_name', 'password', 'token', 'contacts']
+        fields = ['email', 'full_name', 'password', 'token', 'contacts','companion']
 
     def validate(self, data):
         contacts = data.get('contacts', None)
@@ -51,29 +52,52 @@ class LoginSerializer(serializers.Serializer):
 
         if machine_token == be_near.constants.a:
 
-            # Метод authenticate представляет собой кастомную аутентификацию по user_id из Telegram.
-            # Об этом говорит строка
-            # AUTHENTICATION_BACKENDS = ('filling_profile.auth_by_telegram.Auth_by_telegram',) в settings.py
-            # Реализация метода прописана в auth_by_telegram.py
+            # Запускает Auth_by_telegram
             user = authenticate(self, contacts=contacts)
 
             print(f'-----------LoginSerializer: user = {user}')
             # Если пользователь с данными user_id не найден, то authenticate
             # вернет None. Возбудить исключение в таком случае.
-            if user is None:
+            if user is not None:
+                try:
+                    meet = Meet.objects.get(first_profile_id=user.id, status="active")
+                    companion=meet.second_profile_id
+                except Meet.DoesNotExist:
+                    try:
+                        meet = Meet.objects.get(second_profile_id=user.id, status="active")
+                        companion=meet.first_profile_id
+                    except Meet.DoesNotExist:
+                        companion=None
+            
+            else:
                 raise serializers.ValidationError(
                     'A user with this Telegram user_id was not found.'
                 )
 
+            
+
+            if companion is not None:
+                companion = Profile.objects.get(id = companion).contacts
+                url = f"https://api.telegram.org/bot{be_near.constants.bot_token}/getChatMember?user_id={companion}&chat_id={companion}"
+
+                payload={}
+                headers = {}
+
+                companion = requests.request("POST", url, headers=headers, data=payload).json().get("result").get("user").get("username")
+
+                print(f'***********companion:{companion}')
             # Метод validate должен возвращать словарь проверенных данных. Это
             # данные, которые передются в т.ч. в методы create и update.
 
             return {
+                
                 'email': user.email,
                 'username': user.full_name,
                 'contacts': user.contacts,
                 'token': user.token,
-                'meeting_status': user.meeting_status
+                'meeting_status': user.meeting_status,
+                'companion':companion
+
 
             }
         else:
