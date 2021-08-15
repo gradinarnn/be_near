@@ -11,7 +11,8 @@ urlpatterns = [
     path('users/', RegistrationAPIView.as_view()),
     path('users/login/', LoginAPIView.as_view()),
     path('user/', UserRetrieveUpdateAPIView.as_view()),
-    path('meeting', views.meeting, name='meeting')
+    path('meeting', views.meeting, name='meeting'),
+    path('stop_meeting', views.stop_meeting, name='stop_meeting')
 
 
 ]

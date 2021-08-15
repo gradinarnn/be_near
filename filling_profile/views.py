@@ -114,7 +114,7 @@ def meeting(request):
         all_profiles = list(all_profiles)
         print(f'-------------all_profiles list: {all_profiles}---------------------')
         first_profile = all_profiles.pop(0)
-        print(f'-------------Первый пользователь: {first_profile.id}---------------------')
+        print(f'-------------Первый пользователь: {first_profile.profile_id}---------------------')
         print(f'-------------Весь список после взятия первого: {all_profiles}---------------------')
 
         selection_list=all_profiles.copy()
@@ -123,28 +123,28 @@ def meeting(request):
         while (len(selection_list) > 0) and (not meeting_success):
             second_profile_number = random.randint(0, len(selection_list) - 1)
             second_profile = selection_list.pop(second_profile_number)
-            print(f'-------------Второй пользователь: {second_profile}-------------------')
+            print(f'-------------Второй пользователь: {second_profile.profile_id}-------------------')
             print(f'-------------Весь список после взятия второго: {all_profiles}---------------------')
             print(f'-------------Cписок в котором ищется второй: {selection_list}---------------------')
 
             # if ..... проверка встречались ли first_profile и second_profile до этого
 
 
-            meeting_list =list(Meet.objects.all().filter(first_profile_id = first_profile.id))+list(Meet.objects.all().filter(second_profile_id = first_profile.id))
+            meeting_list =list(Meet.objects.all().filter(first_profile_id = first_profile.profile_id))+list(Meet.objects.all().filter(second_profile_id = first_profile.profile_id))
             
             print(f'-------------Список в котором {first_profile} есть: {meeting_list}---------------------')
 
             meeting_indicator = False
             for meet in meeting_list:
 
-                if (second_profile.id == meet.first_profile_id) or (second_profile.id == meet.second_profile_id):
+                if (second_profile.profile_id == meet.first_profile_id) or (second_profile.profile_id == meet.second_profile_id):
                     meeting_indicator = True
                     print(f'-------------meeting_indicator = {meeting_indicator}. А весь список при этом: {all_profiles}---------------------')
 
             print(f'-------------meeting_indicator: {meeting_indicator}---------------------')
             if meeting_indicator == False:
                 print(f'------------Пара сформирована--------------')
-                meeting  = Meet(first_profile=first_profile, second_profile = second_profile)
+                meeting  = Meet(first_profile_id=first_profile.profile_id, second_profile_id = second_profile.profile_id, status = 'active')
                 print(f'----meeting:{meeting}--------------')
                 meeting.save()
 
@@ -190,6 +190,21 @@ def meeting(request):
         if meeting_success == True:
             print(f'-------------Удаляем пользователя: {all_profiles[second_profile_number]}---------------------')
             all_profiles.pop(second_profile_number)
+
+
+
+def stop_meeting(request):
+    active_meets = Meet.objects.all().filter(status = 'active')
+    for meet in active_meets:
+        meet.status = "non_active"
+        meet.save()
+        
+        first_profile = Profile.objects.get(id=meet.first_profile_id)
+        first_profile.meeting_status="waitting"
+        first_profile.save()
+        second_profile = Profile.objects.get(id=meet.second_profile_id)
+        second_profile.meeting_status="waitting"
+        second_profile.save()
 
 
 

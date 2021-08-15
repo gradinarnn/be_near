@@ -1,3 +1,4 @@
+from django.db.models.deletion import DO_NOTHING
 import jwt
 
 from datetime import datetime, timedelta
@@ -144,11 +145,12 @@ class Profile_for_Metting(models.Model):
 
 class Meet(models.Model):
     id = models.AutoField(primary_key=True)
-    first_profile = models.ForeignKey(Profile_for_Metting, on_delete=CASCADE, related_name='first_profile_id', blank=True)
-    second_profile = models.ForeignKey(Profile_for_Metting, on_delete=CASCADE, related_name='second_profile_id', blank=True)
+    first_profile_id = models.CharField(max_length=20, blank=True)
+    second_profile_id = models.CharField(max_length=20, blank=True)
     date_meeting = models.DateField(default=datetime.now(), null=True)
     feedback = models.CharField(max_length=10, null=True)
     goal_id = models.CharField(max_length=10, null=True)
+    status = models.CharField(max_length=10, null=True)
 
     class Meta:
         db_table = 'Meet'

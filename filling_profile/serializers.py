@@ -127,7 +127,7 @@ class UserSerializer(serializers.ModelSerializer):
             profile_for_meeting = Profile_for_Metting(profile=Profile.objects.get(contacts=instance.contacts))
             profile_for_meeting.save()
 
-        elif ((instance.meeting_status == 'not ready') or (instance.meeting_status == 'meetting')) and (profile_exist==True):
+        elif (instance.meeting_status == 'not ready') and (profile_exist==True):
             Profile_for_Metting.objects.filter(profile=Profile.objects.get(contacts=instance.contacts)).delete()
 
         instance.save()

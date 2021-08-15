@@ -1,0 +1,44 @@
+{
+    "profile": {
+        "email": "user1@user.user",
+        "full_name": "user1",
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NDR9.GM4IIVSI-Znn1lRq8aHVWQ1tU1Vx8DSlTrMQXmAk704",
+        "contacts": "327685"
+    }
+}
+
+
+
+
+Registration:
+
+    POST: http://127.0.0.1:8000/filling_profile/users/
+        {
+    "profile": {
+        "full_name": "user1",
+        "email": "user1@user.user",
+        "contacts": "327685"
+    }
+    }
+
+Login:
+    POST: http://127.0.0.1:8000/filling_profile/users/login/
+
+        {
+        "profile": {
+            "full_name": "user1",
+            "email": "user1@user.user",
+            "password": "qweasdzxc"
+        }
+    }
+
+Update:
+    PATCH: http://127.0.0.1:8000/filling_profile/user/
+        Аутентификация в заголовке Bearer: <Token>
+
+        {
+    "profile": {
+       <"Что меняешь">:<"Значение">
+    }
+}
+
