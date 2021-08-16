@@ -7,7 +7,6 @@ import random
 
 import jwt
 import requests
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from django.shortcuts import render
 from rest_framework.generics import RetrieveUpdateAPIView
 
