@@ -2,11 +2,11 @@
 удалить папку: rm -R be_near
 редактирование файла docker-compose.yml:  nano docker-compose.yml
 скопировать репозиторию гита: git clone https://github.com/gradinarnn/be_near.git
- git clone https://github.com/gradinarnn/telegram_bot.git
- docker-compose up
-удалить image: docker rmi -f
- остановить все контейнеры: docker stop $(docker container ls -aq)
- docker exec -it <id> bash
+                              git clone https://github.com/gradinarnn/telegram_bot.git
+запустить докер-помпоуз(-d означает фоновый режим): docker-compose up -d
+удалить image:  
+остановить все контейнеры: docker stop $(docker container ls -aq)
+войти внутрь контейнера: docker exec -it <id> bash
 
 
 
