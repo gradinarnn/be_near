@@ -1,4 +1,7 @@
-from web.apps.filling_profile.models import Skills, Categories
+
+
+from filling_profile.models import Categories, Skills
+
 
 category = (
     "📟 Tech", "☘️ Wellness", "🔥 Trends", "🦉 Knowledge", "💬 Languages", "💭 Art", "🏆 Sports",

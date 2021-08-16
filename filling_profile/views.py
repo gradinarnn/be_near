@@ -2,8 +2,8 @@ import bz2
 import datetime
 import json
 from filling_profile.send_notification import send_MEET_notification
-import gzip
 import random
+from be_near.constants import host
 
 import jwt
 import requests
@@ -77,22 +77,24 @@ def index(request):
 def press_ok(request):
     if request.method == "POST":
         form = Filling_Profile_form(request.POST)
-        prof = form.save(commit=False)
-        prof.skills = request.POST.get('skills_list')
-        editing_profile = Profile.objects.filter(full_name=prof.full_name).exists()
-        if editing_profile:
-            editing_profile = Profile.objects.get(full_name=prof.full_name)
-            editing_profile.full_name = prof.full_name
-            editing_profile.email = prof.email
-            editing_profile.skills = prof.skills
-            editing_profile.goal = prof.goal
-            editing_profile.language = prof.language
-            editing_profile.contacts = prof.contacts
-            editing_profile.save()
+        prof = form
+        if prof.is_valid():
+            prof = form.save(commit=False)
+            prof.skills = request.POST.get('skills_list')
+            editing_profile = Profile.objects.filter(contacts=prof.contacts).exists()
+            if editing_profile:
+                editing_profile = Profile.objects.get(contacts=prof.contacts)
+                editing_profile.full_name = prof.full_name
+                editing_profile.email = prof.email
+                editing_profile.skills = prof.skills
+                editing_profile.goal = prof.goal
+                editing_profile.language = prof.language
+                editing_profile.contacts = prof.contacts
+                editing_profile.save()
 
-        else:
+            else:
 
-            prof.save(force_insert=True)
+                prof.save(force_insert=True)
 
     else:
         form = Filling_Profile_form
@@ -156,7 +158,7 @@ def meeting(request):
                 payload_dict = {"profile":payload_data}
                 payload = json.dumps(payload_dict)
 
-                url = "http://127.0.0.1:8000/filling_profile/user/"
+                url = host +"/filling_profile/user/"
                 token = 'Bearer '+token_value
                 headers = {
                     'Authorization': token,
@@ -170,7 +172,7 @@ def meeting(request):
                 payload_dict = {"profile":payload_data}
                 payload = json.dumps(payload_dict)
 
-                url = "http://127.0.0.1:8000/filling_profile/user/"
+                url = host+"/filling_profile/user/"
                 token = 'Bearer '+token_value
                 headers = {
                     'Authorization': token,
