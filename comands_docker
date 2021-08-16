@@ -1,10 +1,11 @@
- rm -R be_near
- nano docker-compose.yml
- git clone https://github.com/gradinarnn/be_near.git
+списоок всех файлов в текущей директории: ls
+удалить папку: rm -R be_near
+редактирование файла docker-compose.yml:  nano docker-compose.yml
+скопировать репозиторию гита: git clone https://github.com/gradinarnn/be_near.git
  git clone https://github.com/gradinarnn/telegram_bot.git
  docker-compose up
- docker rmi -f
- docker stop $(docker container ls -aq)
+удалить image: docker rmi -f
+ остановить все контейнеры: docker stop $(docker container ls -aq)
  docker exec -it <id> bash
 
 
