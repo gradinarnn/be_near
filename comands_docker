@@ -3,10 +3,16 @@
 редактирование файла docker-compose.yml:  nano docker-compose.yml
 скопировать репозиторию гита: git clone https://github.com/gradinarnn/be_near.git
                               git clone https://github.com/gradinarnn/telegram_bot.git
-запустить докер-помпоуз(-d означает фоновый режим): docker-compose up -d
-удалить все image: docker rmi -f $(docker images -a -q)  
+
+        #запустить докер-помпоуз(-d означает фоновый режим):
+  - docker-compose up -d
+
+      #удалить все image: 
+  - docker rmi -f $(docker images -a -q)  
  остановить все контейнеры: docker stop $(docker container ls -aq)
-войти внутрь контейнера: docker exec -it <id> bash
+
+      #войти внутрь контейнера: 
+  - docker exec -it <id> bash
 
 
 
