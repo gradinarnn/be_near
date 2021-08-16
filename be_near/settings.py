@@ -90,10 +90,10 @@ WSGI_APPLICATION = 'be_near.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER' : 'postgres',
-        'PASSWORD' : 'admin',
-        'HOST' : 'localhost',
+        'NAME': 'selectel',
+        'USER' : 'selectel',
+        'PASSWORD' : 'selectel',
+        'HOST' : '80.249.150.167',
         'PORT' : '5432',
     }
 }
