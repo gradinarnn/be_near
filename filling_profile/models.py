@@ -53,7 +53,7 @@ class UserManager(BaseUserManager):
 
 class Profile(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)
-    full_name = models.CharField('полнейшее имя', max_length=51, blank=True)
+    full_name = models.CharField('полнейшее имя', max_length=50, blank=True)
     email = models.CharField('email адрес', max_length=50, null=True, blank=True, unique=True)
     skills = models.CharField('навыки', max_length=150, null=True)
     goal = models.IntegerField('цель общенщения', default=None, null=True, blank=True)

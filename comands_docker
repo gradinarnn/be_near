@@ -4,12 +4,17 @@
 скопировать репозиторию гита: git clone https://github.com/gradinarnn/be_near.git
                               git clone https://github.com/gradinarnn/telegram_bot.git
 
+        #очистить докер компоуз:
+  - docker-compose rm
+
         #запустить докер-помпоуз(-d означает фоновый режим):
   - docker-compose up -d
 
       #удалить все image: 
   - docker rmi -f $(docker images -a -q)  
- остановить все контейнеры:   
+
+      #остановить все контейнеры:  
+  - docker stop $(docker container ls -aq) 
 
       #войти внутрь контейнера: 
   - docker exec -it <id> bash
