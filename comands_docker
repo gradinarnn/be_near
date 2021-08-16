@@ -9,7 +9,7 @@
 
       #удалить все image: 
   - docker rmi -f $(docker images -a -q)  
- остановить все контейнеры: docker stop $(docker container ls -aq)
+ остановить все контейнеры:   
 
       #войти внутрь контейнера: 
   - docker exec -it <id> bash
