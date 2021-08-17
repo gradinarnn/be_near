@@ -53,8 +53,7 @@ def index(request):
             else:
                 skills_editing_profile_list = ''
             form.full_name = user.full_name
-            a = user
-            form.email = a.email
+            form.email = user.email
             print(f'-----------------{form.full_name}------{form.email}--------------------------')
 
 
@@ -78,23 +77,27 @@ def press_ok(request):
     if request.method == "POST":
         form = Filling_Profile_form(request.POST)
         prof = form
-        if prof.is_valid():
-            prof = form.save(commit=False)
-            prof.skills = request.POST.get('skills_list')
-            editing_profile = Profile.objects.filter(contacts=prof.contacts).exists()
-            if editing_profile:
-                editing_profile = Profile.objects.get(contacts=prof.contacts)
-                editing_profile.full_name = prof.full_name
-                editing_profile.email = prof.email
-                editing_profile.skills = prof.skills
-                editing_profile.goal = prof.goal
-                editing_profile.language = prof.language
-                editing_profile.contacts = prof.contacts
-                editing_profile.save()
-
-            else:
-
-                prof.save(force_insert=True)
+        print(f'**********prof.is_valid():{prof.is_valid()}*****************************')
+        print(f'**********prof.errors:{prof.errors}*****************************')
+        prof.skills = request.POST.get('skills_list')
+        print(f'**********prof.skills:{prof.skills}*****************************')
+        
+        try:
+            editing_profile = Profile.objects.get(email=request.POST.get('email'))
+            editing_profile.full_name =request.POST.get('full_name')           
+            editing_profile.email = request.POST.get('email')
+            editing_profile.skills = request.POST.get('skills_list')
+            editing_profile.goal = request.POST.get('goal')
+            editing_profile.language = request.POST.get('language')
+            editing_profile.contacts = request.POST.get('contacts')
+            editing_profile.save()
+        except Profile.DoesNotExist:
+       
+            prof.is_valid()
+            
+            prof.save()
+       
+      
 
     else:
         form = Filling_Profile_form

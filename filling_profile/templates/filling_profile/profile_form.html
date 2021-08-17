@@ -21,7 +21,13 @@
 
 
 
-    {{ form.as_p }}
+    {{form.full_name}}
+    {{form.email}}
+    {{form.goal}}
+    {{form.contacts}}
+    {{form.language}}
+
+
     <div class="container" style="background:#FDF2EB">
  <div class="content">
 
@@ -35,35 +41,7 @@
 
 
 
-    <div class="container" style="background:#FFFFFF">
-
-        <div class="container is-rounded">
-            <div class="content">
-                <h2><strong>Расскажите о себе собеседнику</strong></h2>
-            </div>
-
-
-    <div class="columns">
-  <div class="column">
-    <div class="field">
-        <label class="label">Как вас зовут?*</label>
-        <div class="control">
-          <input class="input"  name="full_name" type="text" value={{form.full_name.value}} placeholder="Представьтесь собеседнику">
-
-        </div>
-      </div>
-  </div>
-  <div class="column">
-    <div class="field">
-        <label class="label">Email адрес для связи*</label>
-        <div class="control">
-
-            <input class="input" type="email" name="email" value={{form.email.value}}  id="id_email">
-        </div>
-      </div>
-  </div>
-
-</div>
+    
 
 
 
@@ -88,54 +66,7 @@
     </div>
 
 
-        <div class="content">
-            <h3>Как связаться со мной</h3>
-
-            <div class="columns">
-                <div class="column" >
-
-                    <div class="field">
-                        <label class="label">Twitter</label>
-                        <div class="control">
-                            <input class="input"   type="text"  placeholder="Ссылка на twitter-аккаунт">
-                        </div>
-                    </div>
-
-
-                    <div class="field">
-                        <label class="label">Facebook</label>
-                        <div class="control">
-                            <input class="input"   type="text"  placeholder="Ссылка на Facebook-аккаунт">
-                        </div>
-                    </div>
-
-                </div>
-                <div class="column" >
-
-                    <div class="field">
-                        <label class="label">Telegram</label>
-                        <div class="control">
-                            <input class="input"   type="text"  placeholder="Ссылка на Telegram-аккаунт">
-                        </div>
-                    </div>
-
-
-
-                    <div class="field">
-                        <label class="label">Instagram</label>
-                        <div class="control">
-                            <input class="input"   type="text"  placeholder="Ссылка на Instagram-аккаунт">
-                        </div>
-                    </div>
-
-                </div>
-
-
-            </div>
-
-
-
-        </div>
+        
 
 
 
@@ -176,6 +107,7 @@
 
     {% if skills_editing_profile != None %}
     <input type="text" id="skills_list" name="skills_list" value="{{skills_editing_profile}}"/>
+    
     {% else %}
     <input type="text" id="skills_list" name="skills_list" />
     {% endif %}
@@ -187,8 +119,8 @@
 
 
 
-
-
+    
+    
 </form>
 
 
