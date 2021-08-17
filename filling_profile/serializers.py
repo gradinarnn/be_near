@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 import requests
 import be_near.constants
-from .models import Meet, Profile, Profile_for_Metting
+from .models import Meet, Profile, Profile_for_Metting, Skills
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -41,6 +41,7 @@ class LoginSerializer(serializers.Serializer):
     full_name = serializers.CharField(max_length=50, read_only=True)
     email = serializers.CharField(max_length=50, read_only=True)
     companion = serializers.CharField(max_length=25,read_only=True)
+    skills= serializers.CharField(max_length=150,read_only=True)
 
     class Meta:
         model = Profile
@@ -88,6 +89,7 @@ class LoginSerializer(serializers.Serializer):
                 print(f'***********companion:{companion}')
             # Метод validate должен возвращать словарь проверенных данных. Это
             # данные, которые передются в т.ч. в методы create и update.
+            print(f'**************user.skills:{user.skills}*************')
 
             return {
                 

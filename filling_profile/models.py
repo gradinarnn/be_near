@@ -57,7 +57,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     email = models.CharField('email адрес', max_length=50, null=True, blank=True, unique=True)
     skills = models.CharField('навыки', max_length=150, null=True)
     goal = models.IntegerField('цель общенщения', default=None, null=True, blank=True)
-    contacts = models.CharField('Telegram', max_length=15, default=[''], null=True, blank=True, unique=True)
+    contacts = models.CharField('Telegram', max_length=15, default=[''], null=True, blank=True)
     language = models.CharField('язык', max_length=20, default='', null=True, blank=True)
     meeting_status = models.CharField(max_length=20, default="not ready", null=True)
     is_staff = models.BooleanField(default=False)
