@@ -1,5 +1,4 @@
-import bz2
-import datetime
+
 import json
 from filling_profile.send_notification import send_MEET_notification
 import random
@@ -101,14 +100,21 @@ def press_ok(request):
 
     else:
         form = Filling_Profile_form
+    
+    skills = Skills.objects.all()
+    categoriess = Categories.objects.all()
 
-    return render(request, 'filling_profile/profile_form.html', {'form': form})
+    return render(request, 'filling_profile/profile_form.html',
+              {'form': form, 'skills': skills, 'categoriess': categoriess,
+               'skills_editing_profile': editing_profile.skills,
+               'skills_editing_profile_list': editing_profile.skills.split(',')})
 
 
 def login(request):
     return render(request, 'login.html')
 
 
+# Запустить процес формирования встреч
 def meeting(request):
 
     all_profiles = Profile_for_Metting.objects.all()
@@ -197,6 +203,7 @@ def meeting(request):
 
 
 
+# Остановить все встречи и назначить статус участников "waitting"
 def stop_meeting(request):
     active_meets = Meet.objects.all().filter(status = 'active')
     for meet in active_meets:

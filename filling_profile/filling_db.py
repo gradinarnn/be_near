@@ -1,5 +1,9 @@
 
 
+
+#Категории и навыки для БД
+
+
 from filling_profile.models import Categories, Skills
 
 
