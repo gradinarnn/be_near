@@ -1,7 +1,7 @@
 
 import schedule
 import time
-from aiogram.utils.callback_data import CallbackData
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.builtin import CommandStart, Command
