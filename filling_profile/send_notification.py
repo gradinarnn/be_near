@@ -2,12 +2,7 @@
 import schedule
 import time
 
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.builtin import CommandStart, Command
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
 import schedule
-import json
 from filling_profile.models import Profile
 import requests
 import be_near.constants
