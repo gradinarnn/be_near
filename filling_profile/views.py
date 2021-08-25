@@ -1,4 +1,4 @@
-
+import be_near.constants
 import json
 from filling_profile.send_notification import send_MEET_notification
 import random
@@ -280,3 +280,19 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+def check_meeting(request):
+
+    # получаем все встречи
+    all_meeting = Meet.objects.all().filter(status = 'active')
+
+
+
+def stop_meet_change_partner(request):
+    profile_id= request.data.get('profile_id')
+    machine_token=request.data.get('machine_token')
+    if machine_token == be_near.constants.a:
+        q=Meet.objects.all().filter(status = 'active').filter(first_profile_id = profile_id)
+        w=Meet.objects.all().filter(status = 'active').filter(second_profile_id = profile_id)
+        print(f'*****************first:{q}, *********second:{w}********************')
