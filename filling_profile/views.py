@@ -4,6 +4,7 @@ from filling_profile.send_notification import send_MEET_notification
 import random
 from be_near.constants import host, bot_token
 
+import threading
 import schedule
 import time
 from aiogram.utils.callback_data import CallbackData
@@ -436,6 +437,13 @@ def check_meeting_3_day():
 
     all_active_meets = Meet.objects.all().filter(status='active')
 
+    url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={336006405}&text={text}&reply_markup={a}'
+
+    payload = {}
+    headers = {}
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
     for meets in all_active_meets:
 
         # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
@@ -446,7 +454,7 @@ def check_meeting_3_day():
             profile = False
 
         if profile:
-            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={a}'
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={336006405}&text={text}&reply_markup={a}'
 
             payload = {}
             headers = {}
@@ -463,9 +471,18 @@ def check_meeting_3_day():
             response = requests.request("POST", url, headers=headers, data=payload)
 
 
-schedule.every().thursday.at("16:33").do(check_meeting_3_day)
+def run_threaded():
+    schedule.every().thursday.at("22:00").do(check_meeting_3_day)
 
 
-while True:  # этот цикл отсчитывает время. Он обязателен.
-    schedule.run_pending()
-    time.sleep(1)
+    while True:  # этот цикл отсчитывает время. Он обязателен.
+        schedule.run_pending()
+        time.sleep(1)
+    
+
+
+
+
+
+job_thread = threading.Thread(target=run_threaded)
+job_thread.start()
