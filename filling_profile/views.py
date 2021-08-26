@@ -437,21 +437,33 @@ def check_meeting_3_day():
     all_active_meets = Meet.objects.all().filter(status='active')
 
     for meets in all_active_meets:
-        first_profile = Profile.objects.get(id=meets.first_profile_id).contacts
 
-        url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={a}'
+        # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
+        try:
+            first_profile = Profile.objects.get(id=meets.first_profile_id).contacts
+            profile = True
+        except Profile.DoesNotExist:
+            profile = False
 
-        payload = {}
-        headers = {}
+        if profile:
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={a}'
 
-        response = requests.request("POST", url, headers=headers, data=payload)
+            payload = {}
+            headers = {}
 
-        second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
-        url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={a}'
-        response = requests.request("POST", url, headers=headers, data=payload)
+            response = requests.request("POST", url, headers=headers, data=payload)
+        profile = False
+        try:
+            second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
+            profile = True
+        except Profile.DoesNotExist:
+            profile = False
+        if profile:
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={a}'
+            response = requests.request("POST", url, headers=headers, data=payload)
 
 
-schedule.every().thursday.at("14:00").do(check_meeting_3_day)
+schedule.every().thursday.at("16:33").do(check_meeting_3_day)
 
 
 while True:  # этот цикл отсчитывает время. Он обязателен.

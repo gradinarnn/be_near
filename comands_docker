@@ -31,8 +31,6 @@
     #удалить все volume
     docker volume prune
 
-    
-
 
     
 
