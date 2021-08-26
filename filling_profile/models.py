@@ -139,6 +139,9 @@ class Categories(models.Model):
 class Profile_for_Metting(models.Model):
     profile = models.ForeignKey(Profile, on_delete=CASCADE, blank=True)
 
+    def __str__(self):
+        return self.profile.full_name
+
     class Meta:
         db_table = 'Profile_for_Metting'
 
