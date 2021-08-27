@@ -448,7 +448,6 @@ def check_meeting_3_day():
             profile = True
         except Profile.DoesNotExist:
             profile = False
-        print(f"*")
         if profile:
             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={a}'
 
@@ -472,7 +471,6 @@ def run_threaded():
 
 
     while True:  # этот цикл отсчитывает время. Он обязателен.
-        print(f"-")
         schedule.run_pending()
         time.sleep(1)
     
