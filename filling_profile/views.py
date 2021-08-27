@@ -467,7 +467,7 @@ def check_meeting_3_day():
 
 
 def run_threaded():
-    schedule.every().day.at("19:50").do(check_meeting_3_day)
+    schedule.every().day.at("20:50").do(check_meeting_3_day)
 
 
     while True:  # этот цикл отсчитывает время. Он обязателен.
