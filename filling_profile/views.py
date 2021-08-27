@@ -466,18 +466,18 @@ def check_meeting_3_day():
             response = requests.request("POST", url, headers=headers, data=payload)
 
 
-# def run_threaded():
-#     schedule.every().thursday.at("21:39").do(check_meeting_3_day)
+def run_threaded():
+    schedule.every().day.at("12:00").do(check_meeting_3_day)
 
 
-#     while True:  # этот цикл отсчитывает время. Он обязателен.
-#         schedule.run_pending()
-#         time.sleep(1)
+    while True:  # этот цикл отсчитывает время. Он обязателен.
+        schedule.run_pending()
+        time.sleep(1)
     
 
 
 
 
 
-# job_thread = threading.Thread(target=run_threaded)
-# job_thread.start()
+job_thread = threading.Thread(target=run_threaded)
+job_thread.start()
