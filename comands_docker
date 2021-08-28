@@ -1,5 +1,6 @@
 списоок всех файлов в текущей директории: ls
 удалить папку: rm -R be_near
+               rm -R telegram_bot
 редактирование файла docker-compose.yml:  nano docker-compose.yml
 скопировать репозиторию гита: git clone https://github.com/gradinarnn/be_near.git
                               git clone https://github.com/gradinarnn/telegram_bot.git
@@ -21,8 +22,10 @@
 
 
 
- docker build -t <name> ~/telegram_bot
+ docker build -t <name> ~/telegram_bot      docker build -t telegram_bot ~/telegram_bot
  docker run -d <IMAGE ID>
+
+
 
     #находение volume
   - postgres_data:/var/lib/postgresql/data
@@ -30,9 +33,3 @@
 
     #удалить все volume
     docker volume prune
-
-    
-
-
-    
-

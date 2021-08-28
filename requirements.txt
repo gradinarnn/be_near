@@ -4,3 +4,5 @@ pip
 PyJWT
 djangorestframework
 requests
+schedule
+aiogram

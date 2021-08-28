@@ -1,8 +1,20 @@
-
+import be_near.constants
 import json
 from filling_profile.send_notification import send_MEET_notification
 import random
-from be_near.constants import host
+from be_near.constants import host, bot_token
+
+import threading
+import schedule
+from aiogram.utils.callback_data import CallbackData
+from aiogram.dispatcher.filters.builtin import CommandStart, Command
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from filling_profile.models import Profile
+import requests
+import time
+
+
+
 
 import jwt
 import requests
@@ -160,7 +172,7 @@ def meeting(request):
                 meeting.save()
 
                 
-                send_MEET_notification(first_profile.profile_id,second_profile.profile_id)
+                send_MEET_notification(first_profile.profile_id,second_profile.profile_id,'Мы нашли тебе себеседника', 'Мы нашли тебе себеседника')
 
                 # меняем статус встречи первого пользователя на "meeting"
                 token_value = Profile.objects.get(id =first_profile.profile_id).token
@@ -281,3 +293,197 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+def check_meeting(request):
+
+    # получаем все встречи
+    all_meeting = Meet.objects.all().filter(status = 'active')
+
+
+
+
+
+
+class stop_meet_change_partner(APIView):
+    permission_classes = (AllowAny,)
+    
+
+    def post(self, request):
+        profile_id = Profile.objects.get(contacts=request.data.get('profile_id', {})).id
+        machine_token = request.data.get('machine_token', {})
+        if machine_token == be_near.constants.a:
+
+
+            q=Meet.objects.all().filter(status = 'active').filter(first_profile_id = profile_id)
+            w=Meet.objects.all().filter(status = 'active').filter(second_profile_id = profile_id)
+            for qq in q:
+                qq.status = 'non_active'
+                user_id_first = Profile.objects.get(id=qq.first_profile_id).contacts
+                user_id_second = Profile.objects.get(id=qq.second_profile_id).contacts
+                send_MEET_notification(user_id_first,user_id_second,'Встреча отменена, нам очень жаль 🤧', 'Встреча отменена, нам очень жаль 🤧')
+                qq.save()
+                token1 = Profile.objects.get(contacts = user_id_first).token
+                payload_data = {"meeting_status":'waitting'}
+
+                payload_dict = {"profile":payload_data}
+
+                payload = json.dumps(payload_dict)
+
+
+                url = host+"/filling_profile/user/"
+
+
+                token = 'Bearer '+token1
+                headers = {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                }
+                response = requests.request("PATCH", url, headers=headers, data=payload)
+
+                token2 = Profile.objects.get(contacts = user_id_second).token
+                payload_data = {"meeting_status":'waitting'}
+
+                payload_dict = {"profile":payload_data}
+
+                payload = json.dumps(payload_dict)
+
+
+                url = host+"/filling_profile/user/"
+
+
+                token = 'Bearer '+token2
+                headers = {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                }
+                response = requests.request("PATCH", url, headers=headers, data=payload)
+
+            
+            for ww in w:
+                ww.status = 'non_active'
+                user_id_first = Profile.objects.get(id=ww.first_profile_id).contacts
+                user_id_second = Profile.objects.get(id=ww.second_profile_id).contacts
+                send_MEET_notification(user_id_first,user_id_second,'Встреча отменена, нам очень жаль 🤧', 'Встреча отменена, нам очень жаль 🤧')
+                ww.save()
+                token1 = Profile.objects.get(contacts = user_id_first).token
+                payload_data = {"meeting_status":'waitting'}
+
+                payload_dict = {"profile":payload_data}
+
+                payload = json.dumps(payload_dict)
+
+
+                url = host+"/filling_profile/user/"
+
+
+                token = 'Bearer '+token1
+                headers = {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                }
+                response = requests.request("PATCH", url, headers=headers, data=payload)
+
+                token2 = Profile.objects.get(contacts = user_id_second).token
+                payload_data = {"meeting_status":'waitting'}
+
+                payload_dict = {"profile":payload_data}
+
+                payload = json.dumps(payload_dict)
+
+
+                url = host+"/filling_profile/user/"
+
+
+                token = 'Bearer '+token2
+                headers = {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                }
+                response = requests.request("PATCH", url, headers=headers, data=payload)
+
+            return Response('ok', status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
+def check_meeting_3_day():
+    checking_meeting= CallbackData("first_button", "status")
+    text = f'🙌 Привет! Уже узпел паобщаться с собеседником?'
+    a = InlineKeyboardMarkup(
+        row_width=3,
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text='Да, всё гуд',
+                    callback_data=checking_meeting.new(status="ok_good!"),
+
+                ),
+                InlineKeyboardButton(
+                    text='Нет, ещё не общались',
+                    callback_data=checking_meeting.new(status="not_communicate")
+
+                ),
+                InlineKeyboardButton(
+                    text='Парнёр не отвечает',
+                    callback_data=checking_meeting.new(status="not_answer")
+
+                )
+            ]
+        ]
+    )
+
+    all_active_meets = Meet.objects.all().filter(status='active')
+
+    
+
+    for meets in all_active_meets:
+
+        # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
+        try:
+            first_profile = Profile.objects.get(id=meets.first_profile_id).contacts
+            profile = True
+        except Profile.DoesNotExist:
+            profile = False
+        if profile:
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={a}'
+
+            payload = {}
+            headers = {}
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+        profile = False
+        try:
+            second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
+            profile = True
+        except Profile.DoesNotExist:
+            profile = False
+        if profile:
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={a}'
+            response = requests.request("POST", url, headers=headers, data=payload)
+
+
+def run_threaded():
+    schedule.every().wednesday.at("11:00").do(check_meeting_3_day,)
+
+
+    while True:  # этот цикл отсчитывает время. Он обязателен.
+        schedule.run_pending()
+        time.sleep(1)
+    
+
+
+
+
+
+job_thread = threading.Thread(target=run_threaded)
+job_thread.start()
+
+
+
+
+
