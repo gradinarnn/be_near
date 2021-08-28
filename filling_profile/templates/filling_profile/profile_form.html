@@ -2,8 +2,6 @@
 
 
 <head>
-
-
     <meta charset="utf-8"/>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,31 +10,115 @@
 </head>
 <body>
 
+<!-- 
+    1. Выводить форму данных (имя-емейл-контакты-языки)
+    2. Дальше выгружаем ему всякие параметры (типа категории) + кнопка сохранить
+    3. Готовность ко встрече -> текущий статус или начать-прекратить
+
+ -->
 
 {% block content %}
 
-<form action="{% url 'press_ok' %}" method="post" style="background:#c0bebd">
+<form class="box block" action="{% url 'press_ok' %}" method="post" style="background:#fff">
 
     {% csrf_token %}
 
+    <div class="field">{{form.full_name}}</div>
+    <div class="field">{{form.email}}</div>
+    <div class="field">{{form.contacts}}</div>
+    <div class="field">{{form.language}}</div>
+
+</form>
 
 
-    {{form.full_name}}
-    {{form.email}}
-    {{form.contacts}}
-    {{form.language}}
+<!-- Нужно сюда подгружать встречу -->
+<div class="box block" style="background:#FDF2EB">
+    <div class="content">
+   
+        Встреча c 24 по 30 июля
+           <h2><strong>Daniil Polozov </strong></h2>
+        🕹 PC Gaming, 💻 Product Manager, 😎 StartupMaker<br>
+        jokerdab@gmail.com | @joker_dab | @jokerdabro
+       </div>
+   
+</div>
+<!-- Нужно сюда подгружать встречу -->
+
+<!-- Категории -->
+<form class="box block" action="{% url 'press_ok' %}" method="post">
+
+    <div class="">
+        {% for cat in categoriess %}
+            <div class="block">{{ cat.category_title }}:</div>
+            <div class="tags are-large">
+                {% for skill in skills %}
+                    {% if cat.category_title == skill.skill_category %}
+                    <span class="tag">
+                        {% if skills_editing_profile != None %}
+                            {% if skill.skill_title in skills_editing_profile_list %}
+                                <tr class='success'>
+                                <input type="checkbox" class="check_value" checked="checked" value='{{ skill.skill_title }}'/> 
+                                <!-- <span>{{ skill.skill_title }}</span> -->
+                                </tr>
+                            {% else %}
+                                <input type="checkbox" class="check_value" value='{{ skill.skill_title }}'/> 
+                                <span> {{ skill.skill_title }}</span>
+                            {% endif %}
+
+                        {% else %}
+                            <input type="checkbox" class="check_value" value='{{ skill.skill_title }}'/> 
+                            <span>{{ skill.skill_title }}</span>
+                        {% endif %}
+
+                    </span>
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>    
+        <br>
+        {% endfor %}
+
+        
+        {{ skills_list }}
+        <button type="submit" >Сохранить</button>
 
 
-    <div class="container" style="background:#FDF2EB">
- <div class="content">
+        <!-- <button type="text" value="Сохранить"> -->
 
-     Встреча c 24 по 30 июля
-        <h2><strong>Daniil Polozov </strong></h2>
-     🕹 PC Gaming, 💻 Product Manager, 😎 StartupMaker<br>
-     jokerdab@gmail.com | @joker_dab | @jokerdabro
+        {% if skills_editing_profile %}
+            <div class="tag">
+                {{ skills_editing_profile }}
+            </div>
+
+            <!-- <input type="text" id="skills_list" name="skills_list" value="{{skills_editing_profile}}"/> -->
+        {% else %}
+            <!-- <input type="text" id="skills_list" name="skills_list" /> -->
+            <div class="">
+                {{ skills_editing_profile }}
+            </div>
+        {% endif %}
+
+        <!-- {% if skills_editing_profile != None %}
+            <div class="field is-grouped is-grouped-multiline">
+                <div class="control">
+                <div class="tags has-addons">
+                    <a class="tag is-link">{{ skills_editing_profile }}</a>
+                    <a class="tag is-delete"></a>
+                </div>
+            </div>
+
+            {{ skills_editing_profile }}
+            <input type="text" id="skills_list" name="skills_list" value="{{skills_editing_profile}}"/>
+        
+        {% else %}
+            <input type="text" id="skills_list" name="skills_list" />
+        {% endif %} -->
+
     </div>
 
-    </div>
+</form>
+<!-- Категории -->
 
 
 
@@ -46,7 +128,6 @@
 
 
 
-    </div>
 
     <div class="container">
         <div class="content">
@@ -72,44 +153,6 @@
 
 
 
-
-        {% for cat in categoriess %}
-    {{ cat.category_title }}:<br>
-    {% for skill in skills %}
-
-
-        {% if cat.category_title == skill.skill_category %}
-            {% if skills_editing_profile != None %}
-                {% if skill.skill_title in skills_editing_profile_list %}
-                    <tr class='success'>
-                    <input type="checkbox" class="check_value" checked="checked" value='{{ skill.skill_title }}'/>{{ skill.skill_title }}
-                    </tr>
-                {% else %}
-                    <input type="checkbox" class="check_value" value='{{ skill.skill_title }}'/> {{ skill.skill_title }}
-                {% endif %}
-
-            {% else %}
-
-                <input type="checkbox" class="check_value" value='{{ skill.skill_title }}'/> {{ skill.skill_title }}
-
-            {% endif %}
-
-
-        {% endif %}
-
-    {% endfor %}
-
-    <br>
-    {% endfor %}
-
-
-
-    {% if skills_editing_profile != None %}
-    <input type="text" id="skills_list" name="skills_list" value="{{skills_editing_profile}}"/>
-    
-    {% else %}
-    <input type="text" id="skills_list" name="skills_list" />
-    {% endif %}
     <br>
     <br>
 
@@ -119,8 +162,6 @@
 
 
     
-    
-</form>
 
 
 {% endblock%}
