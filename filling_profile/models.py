@@ -151,9 +151,10 @@ class Meet(models.Model):
     first_profile_id = models.CharField(max_length=20, blank=True)
     second_profile_id = models.CharField(max_length=20, blank=True)
     date_meeting = models.DateField(default=datetime.now(), null=True)
-    feedback = models.CharField(max_length=10, null=True)
+    second_feedback = models.CharField(max_length=10, null=True)
     goal_id = models.CharField(max_length=10, null=True)
     status = models.CharField(max_length=10, null=True)
+    first_feedback=models.CharField(max_length=10, null=True)
 
     class Meta:
         db_table = 'Meet'

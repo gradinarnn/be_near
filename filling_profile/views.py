@@ -533,7 +533,7 @@ def every_saturday():
             text = f'✨ Хэй, как прошла встреча с @{username_from_id(meets.first_profile_id)}? Можешь оценить встречу?'
             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
             response = requests.request("POST", url, headers=headers, data=payload)
-        meets.status  = "non_active"
+
         meets.save()
 
 
@@ -553,6 +553,49 @@ def run_threaded():
 
 job_thread = threading.Thread(target=run_threaded)
 job_thread.start()
+
+
+class leave_feedback(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        # Получаем данные пользователя
+        profile_id = Profile.objects.get(contacts=request.data.get('profile_id', {})).id
+        machine_token = request.data.get('machine_token', {})
+        feedback = request.data.get('feedback', {})
+
+        # Сравниваем, наш ли это бот
+        if machine_token == be_near.constants.a:
+            # Определяем какой пользователь(первый или второй) прислал feedback
+            try:
+                meet = Meet.objects.get(status = 'active', first_profile_id = profile_id)
+                profile_number = 1
+            except Meet.DoesNotExist:
+                meet = Meet.objects.get(status='active', second_profile_id=profile_id)
+                profile_number = 2
+
+            if profile_number==1:
+                meet.first_feedback = feedback
+                meet.save()
+                # Если пользователь, который прислал feedback, первый, а второй пользователь уже оставил feedback,
+                # то статус встречи  можно поставить non_active
+                if meet.second_feedback is not None:
+                    meet.status = "non_active"
+                    meet.save()
+            elif profile_number==2:
+                meet.second_feedback = feedback
+                meet.save()
+                if meet.first_feedback is not None:
+                    meet.status = "non_active"
+                    meet.save()
+
+            print(f'****************Meet:{meet}'
+                  f'******profile_number:{profile_number}'
+                  f'************feedback:{feedback}'
+                  f'********meet.first_feedback:{meet.first_feedback}')
+
+
+            return Response('ok', status=status.HTTP_200_OK)
 
 
 

@@ -142,7 +142,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         
         try:
-            profile= Profile_for_Metting.objects.get(profile=Profile.objects.get(contacts=instance.contacts))
+            profile = Profile_for_Metting.objects.get(profile=Profile.objects.get(contacts=instance.contacts))
             profile_exist=True
             print(f'Профиль найден')
         except Profile_for_Metting.DoesNotExist:
