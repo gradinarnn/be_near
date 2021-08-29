@@ -3,6 +3,8 @@ import json
 from filling_profile.send_notification import send_MEET_notification
 import random
 from be_near.constants import host, bot_token
+from filling_profile.telegram_function import username_from_id
+from filling_profile.CallbackData import checking_meeting, meeting_feedback
 
 import threading
 import schedule
@@ -412,9 +414,9 @@ class stop_meet_change_partner(APIView):
 
 
 def check_meeting_3_day():
-    checking_meeting= CallbackData("first_button", "status")
+    
     text = f'🙌 Привет! Уже узпел паобщаться с собеседником?'
-    a = InlineKeyboardMarkup(
+    buttons = InlineKeyboardMarkup(
         row_width=3,
         inline_keyboard=[
             [
@@ -450,7 +452,7 @@ def check_meeting_3_day():
         except Profile.DoesNotExist:
             profile = False
         if profile:
-            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={a}'
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
 
             payload = {}
             headers = {}
@@ -463,12 +465,81 @@ def check_meeting_3_day():
         except Profile.DoesNotExist:
             profile = False
         if profile:
-            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={a}'
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
             response = requests.request("POST", url, headers=headers, data=payload)
+
+
+def every_saturday():
+    
+    all_active_meets = Meet.objects.all().filter(status='active')
+    buttons = InlineKeyboardMarkup(
+        row_width=5,
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text='👎',
+                    callback_data=meeting_feedback.new(status="1")
+
+                ),
+                InlineKeyboardButton(
+                    text='😒',
+                    callback_data=meeting_feedback.new(status="2")
+
+                ),
+                InlineKeyboardButton(
+                    text='🙂',
+                    callback_data=meeting_feedback.new(status="3")
+
+                ),
+                InlineKeyboardButton(
+                    text='😍',
+                    callback_data=meeting_feedback.new(status="4")
+                ),
+                InlineKeyboardButton(
+                    text='👍',
+                    callback_data=meeting_feedback.new(status="5")
+                )
+
+                
+            ]
+        ]
+    )
+
+    for meets in all_active_meets:
+        # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
+        try:
+            first_profile = Profile.objects.get(id=meets.first_profile_id).contacts
+            profile = True
+        except Profile.DoesNotExist:
+            profile = False
+        if profile:
+            
+            text = f'✨ Хэй, как прошла встреча с @{username_from_id(meets.second_profile_id)}? Можешь оценить встречу?'
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
+
+            payload = {}
+            headers = {}
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+        profile = False
+        try:
+            second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
+            profile = True
+        except Profile.DoesNotExist:
+            profile = False
+        if profile:
+
+
+            text = f'✨ Хэй, как прошла встреча с @{username_from_id(meets.first_profile_id)}? Можешь оценить встречу?'
+            url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
+            response = requests.request("POST", url, headers=headers, data=payload)
+        meets.status  = "non_active"
+        meets.save()
 
 
 def run_threaded():
     schedule.every().wednesday.at("11:00").do(check_meeting_3_day,)
+    schedule.every().saturday.at("18:42").do(every_saturday,)
 
 
     while True:  # этот цикл отсчитывает время. Он обязателен.
