@@ -19,120 +19,89 @@
 
 {% block content %}
 
-<form class="box block" action="{% url 'press_ok' %}" method="post" style="background:#fff">
+{% csrf_token %}
 
-    {% csrf_token %}
+<!-- About me -->
+<div class="block box">
+    <form action="{% url 'press_ok' %}">
+    {% if user != '' %}
+        <div class="field">
+            <label class="label">Ваше имя</label>
+            <div class="control">
+                <input class="input" type="text" placeholder="Daniil" value="{{ forms.full_name }}">
+              </div>
+        </div>
 
-    <div class="field">{{form.full_name}}</div>
-    <div class="field">{{form.email}}</div>
-    <div class="field">{{form.contacts}}</div>
-    <div class="field">{{form.language}}</div>
+        <div class="field">
+            <label class="label">Ваше email</label>
+            <div class="control">
+                <input class="input" type="email" placeholder="daniil@example.com" value="{{ forms.email }}">
+            </div>
+        </div>
 
-</form>
+        <div class="field">
+            <label class="label">Ваши навыки</label>
+            <H1>{{ user_skill_set }}</H1>
+        </div>
 
+    {% else %}
+        <div class="field">
+            <label class="label">Ваше имя</label>
+            <div class="control">
+                <input class="input" type="text" placeholder="Daniil" value="–">
+            </div>
+        </div>
 
-<!-- Нужно сюда подгружать встречу -->
-<div class="box block" style="background:#FDF2EB">
-    <div class="content">
-   
-        Встреча c 24 по 30 июля
-           <h2><strong>Daniil Polozov </strong></h2>
-        🕹 PC Gaming, 💻 Product Manager, 😎 StartupMaker<br>
-        jokerdab@gmail.com | @joker_dab | @jokerdabro
-       </div>
-   
+        <div class="field">
+            <label class="label">Ваше email</label>
+            <div class="control">
+                <input class="input" type="email" placeholder="daniil@example.com" value="–">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">Ваши навыки</label>
+            <H1>–</H1>
+        </div>
+
+    {% endif %}
+    <button type="submit" class="button is-link is-light is-normal">Изменить</button>
+    </form>
 </div>
-<!-- Нужно сюда подгружать встречу -->
 
-<!-- Категории -->
-<form class="box block" action="{% url 'press_ok' %}" method="post">
-
-    <div class="">
-        {% for cat in categoriess %}
-            <div class="block">{{ cat.category_title }}:</div>
-            <div class="tags are-large">
+<!-- Вывод категорий выбранных и пр -->
+<form class="box block" action="{% url 'press_ok' %}">
+        {% for category in categories %}
+            <!-- Есть категория и у неё есть skills_set -->
+            <h3>{{ category.category_title }}</h3>
+            <div class="tags are-medium">
                 {% for skill in skills %}
-                    {% if cat.category_title == skill.skill_category %}
+                    {% if category.category_title == skill.skill_category %}
                     <span class="tag">
-                        {% if skills_editing_profile != None %}
-                            {% if skill.skill_title in skills_editing_profile_list %}
-                                <tr class='success'>
-                                <input type="checkbox" class="check_value" checked="checked" value='{{ skill.skill_title }}'/> 
-                                <!-- <span>{{ skill.skill_title }}</span> -->
-                                </tr>
+                        <label class="checkbox">
+                            {% if skill.skill_category in user_skill_set %}
+                            <input type="checkbox" checked>
                             {% else %}
-                                <input type="checkbox" class="check_value" value='{{ skill.skill_title }}'/> 
-                                <span> {{ skill.skill_title }}</span>
+                            <input type="checkbox" >
                             {% endif %}
-
-                        {% else %}
-                            <input type="checkbox" class="check_value" value='{{ skill.skill_title }}'/> 
-                            <span>{{ skill.skill_title }}</span>
-                        {% endif %}
-
+                            {{ skill.skill_title }}
+                        </label>
                     </span>
                     {% endif %}
-
                 {% endfor %}
-
-            </div>    
-        <br>
+            </div>
+            <br>
         {% endfor %}
 
-        
-        {{ skills_list }}
-        <button type="submit" >Сохранить</button>
-
-
-        <!-- <button type="text" value="Сохранить"> -->
-
-        {% if skills_editing_profile %}
-            <div class="tag">
-                {{ skills_editing_profile }}
-            </div>
-
-            <!-- <input type="text" id="skills_list" name="skills_list" value="{{skills_editing_profile}}"/> -->
-        {% else %}
-            <!-- <input type="text" id="skills_list" name="skills_list" /> -->
-            <div class="">
-                {{ skills_editing_profile }}
-            </div>
-        {% endif %}
-
-        <!-- {% if skills_editing_profile != None %}
-            <div class="field is-grouped is-grouped-multiline">
-                <div class="control">
-                <div class="tags has-addons">
-                    <a class="tag is-link">{{ skills_editing_profile }}</a>
-                    <a class="tag is-delete"></a>
-                </div>
-            </div>
-
-            {{ skills_editing_profile }}
-            <input type="text" id="skills_list" name="skills_list" value="{{skills_editing_profile}}"/>
-        
-        {% else %}
-            <input type="text" id="skills_list" name="skills_list" />
-        {% endif %} -->
-
-    </div>
+    <button type="submit" class="button is-link is-light is-normal">Обновить</button>
 
 </form>
-<!-- Категории -->
 
-
-
-    
-
-
-
-
-
-
-    <div class="container">
-        <div class="content">
-        <h3>Страна поиска собеседника</h3>
-            <p class="subtitle is-6">Если страна не указана, мы будем искать по всему миру</p>
+<!-- 
+<div class="container">
+    <div class="content">
+    <h3>Страна поиска собеседника</h3>
+        <p class="subtitle is-6">Если страна не указана, мы будем искать по всему миру</p>
     </div>
 
             <div class="select">
@@ -146,19 +115,12 @@
     </div>
 
 
-        
-
-
-
-
-
-
     <br>
     <br>
 
 
     <button class="button is-danger is-rounded" type="submit" >Найти мне собеседника</button>
-
+ -->
 
 
     

@@ -35,19 +35,22 @@ from .serializers import (
 
 
 def index(request):
+    # На этом этапе склеиваем выбранные навыки и те, что есть в целом
+    # user.contacts = telegeam and others socials network
+
+    """ Обычный вывод информации по юзеру на странице с профилем """
 
     token = request.GET.get('token')
     if token != None:
         contacts = request.GET.get('contacts')
 
 
-        payload = jwt.decode(token, 'q', algorithms="HS256")
+        payload = jwt.decode(token, 'q', algorithms="HS256") # Передача id-шника
         user = Profile.objects.get(pk=payload['id'])
 
-        print(f'---------view index user.contacts:{user.contacts}-------------------')
-        print(f'---------view index contacts:{contacts}-------------------')
-        print(f'---------view index user:{user}-------------------')
-
+        # print(f'---------view index user.contacts:{user.contacts}-------------------')
+        # print(f'---------view index contacts:{contacts}-------------------')
+        # print(f'---------view index user:{user}-------------------')
 
 
         if user.contacts==contacts:
@@ -57,70 +60,78 @@ def index(request):
                     "language": user.language,
                     "contacts": user.contacts}
 
-            form = Filling_Profile_form(data)
-            skills_editing_profile = user.skills
-            if skills_editing_profile != None:
-                skills_editing_profile_list = skills_editing_profile.split(',')
-            else:
-                skills_editing_profile_list = ''
-            form.full_name = user.full_name
-            form.email = user.email
-            print(f'-----------------{form.full_name}------{form.email}--------------------------')
+            forms = Filling_Profile_form(data)
+
+            user_skill_set = user.skills.split(',') # Получаю текущий список скиллов юзера
+            # Убираю проверку, будет доступна на выводе
+            # if skills_editing_profile != None:
+            #     skills_editing_profile_list = skills_editing_profile.split(',')
+            # else:
+            #     skills_editing_profile_list = ''
+
+            forms.full_name = user.full_name
+            forms.email = user.email
+            # print(f'-----------------{form.full_name}------{form.email}--------------------------')
 
 
 
     else:
-        form = Filling_Profile_form
-        skills_editing_profile_list = ''
-        skills_editing_profile = ''
+        forms = Filling_Profile_form
+        user = ''
+        user_skill_set = ''
+
+
     skills = Skills.objects.all()
-    categoriess = Categories.objects.all()
+    categories = Categories.objects.all()
 
     return render(request, 'filling_profile/profile_form.html',
-              {'form': form, 'skills': skills, 'categoriess': categoriess,
-               'skills_editing_profile': skills_editing_profile,
-               'skills_editing_profile_list': skills_editing_profile_list})
-
-
-
+              {'user': user, 'skills': skills, 'categories': categories,
+              'user_skill_set': user_skill_set,'forms':forms})
 
 
 def press_ok(request):
     if request.method == "POST":
-        form = Filling_Profile_form(request.POST)
-        prof = form
+        forms = Filling_Profile_form(request.POST)
+        prof = forms
         print(f'**********prof.is_valid():{prof.is_valid()}*****************************')
         print(f'**********prof.errors:{prof.errors}*****************************')
         prof.skills = request.POST.get('skills_list')
         print(f'**********prof.skills:{prof.skills}*****************************')
         
         try:
-            editing_profile = Profile.objects.get(email=request.POST.get('email'))
-            editing_profile.full_name =request.POST.get('full_name')           
+            # Принимаем обновлённые данные
+            # editing_profile = Profile.objects.get(email=request.POST.get('email'))
+            editing_profile = request.user
+            editing_profile.full_name = request.POST.get('full_name')           
             editing_profile.email = request.POST.get('email')
             editing_profile.skills = request.POST.get('skills_list')
             editing_profile.goal = request.POST.get('goal')
             editing_profile.language = request.POST.get('language')
             editing_profile.contacts = request.POST.get('contacts')
             editing_profile.save()
+
         except Profile.DoesNotExist:
-       
             prof.is_valid()
             
             prof.save()
+        
+        user = editing_profile
+        user_skill_set = user.skills.split(',')
        
       
 
     else:
-        form = Filling_Profile_form
+        forms = Filling_Profile_form
+        user = request.user
+        user_skill_set = user.skills.split(',')
     
     skills = Skills.objects.all()
-    categoriess = Categories.objects.all()
+    categories = Categories.objects.all()
+
 
     return render(request, 'filling_profile/profile_form.html',
-              {'form': form, 'skills': skills, 'categoriess': categoriess,
-               'skills_editing_profile': editing_profile.skills,
-               'skills_editing_profile_list': editing_profile.skills.split(',')})
+              {'user': user,'forms': forms, 'skills': skills, 'categories': categories,
+               'user_skill_set': user_skill_set})
 
 
 def login(request):
@@ -409,8 +420,6 @@ class stop_meet_change_partner(APIView):
 
 
 
-
-
 def check_meeting_3_day():
     checking_meeting= CallbackData("first_button", "status")
     text = f'🙌 Привет! Уже узпел паобщаться с собеседником?'
@@ -482,6 +491,31 @@ def run_threaded():
 
 job_thread = threading.Thread(target=run_threaded)
 job_thread.start()
+
+
+
+# def match_skills_category(skills, categories):
+#     # Бинарный поиск для склейки данных
+#     # Создаётся {key:value} -> key = category, value -> skills
+#     match_category = {}
+
+#     for category in categories:
+#         for skill in skills:
+#             if category.category_title == skill.skill_category:
+#                 match_category[category].append(skill.skill_category)
+
+#     return match_category
+
+        
+
+
+# def update_info(request):
+#     # Получение информации (получаются данные по категориям и навыкам)
+#     # после чего происходит обновление страницы и данные профиля обновляются
+#     """ Обновление информации по скилл-сету на странице """
+
+
+#     pass
 
 
 

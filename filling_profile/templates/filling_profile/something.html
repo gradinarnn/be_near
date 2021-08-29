@@ -1,0 +1,91 @@
+<!-- Категории -->
+<!-- <form class="box block" action="{% url 'press_ok' %}" method="post">
+
+        {% for cat in categories %}
+            <div class="block">{{ cat.category_title }}:</div>
+            <div class="tags are-large">
+                {% for skill in skills %}
+                    {% if cat.category_title == skill.skill_category %}
+                    <span class="tag">
+                        {% if skills_editing_profile != None %}
+                            {% if skill.skill_title in skills_editing_profile_list %}
+                                <tr class='success'>
+                                <input type="checkbox" class="check_value" checked="checked" value='{{ skill.skill_title }}'/> 
+                                <span>{{ skill.skill_title }}</span>
+                                </tr>
+                            {% else %}
+                                <input type="checkbox" class="check_value" value='{{ skill.skill_title }}'/> 
+                                <span> {{ skill.skill_title }}</span>
+                            {% endif %}
+
+                        {% else %}
+                            <input type="checkbox" class="check_value" value='{{ skill.skill_title }}'/> 
+                            <span>{{ skill.skill_title }}</span>
+                        {% endif %}
+
+                    </span>
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>    
+        <br>
+        {% endfor %}
+
+        
+        {{ skills_list }}
+        <button type="submit" >Сохранить</button>
+
+        {% if skills_editing_profile %}
+            <div class="tag">
+                {{ skills_editing_profile }}
+            </div>
+        {% else %}
+            <div class="">
+                {{ skills_editing_profile }}
+            </div>
+        {% endif %}
+            <div class="field is-grouped is-grouped-multiline">
+                <div class="control">
+                <div class="tags has-addons">
+                    <a class="tag is-link">{{ skills_editing_profile }}</a>
+                    <a class="tag is-delete"></a>
+                </div>
+            </div>
+
+            {{ skills_editing_profile }}
+            <input type="text" id="skills_list" name="skills_list" value="{{skills_editing_profile}}"/>
+        
+        {% else %}
+            <input type="text" id="skills_list" name="skills_list" />
+        {% endif %}
+
+</form> -->
+<!-- Категории -->
+
+
+
+<!-- <form class="box block" action="{% url 'press_ok' %}" method="post" style="background:#fff">
+
+
+    <div class="field">{{form.full_name}}</div>
+    <div class="field">{{form.email}}</div>
+    <div class="field">{{form.contacts}}</div>
+    <div class="field">{{form.language}}</div>
+
+</form> -->
+
+
+
+<!-- Нужно сюда подгружать встречу -->
+<!-- <div class="box block" style="background:#FDF2EB">
+    <div class="content">
+   
+        Встреча c 24 по 30 июля
+           <h2><strong>Daniil Polozov </strong></h2>
+        🕹 PC Gaming, 💻 Product Manager, 😎 StartupMaker<br>
+        jokerdab@gmail.com | @joker_dab | @jokerdabro
+       </div>
+   
+</div> -->
+<!-- Нужно сюда подгружать встречу -->

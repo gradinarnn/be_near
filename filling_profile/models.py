@@ -114,6 +114,9 @@ class Profile(AbstractBaseUser, PermissionsMixin):
 
 
 class Skills(models.Model):
+    # Добавь сюда category_id
+    # Удали skill_category, т.к он тут не нужен
+    
     skill_id = models.AutoField(primary_key=True)
     skill_title = models.CharField(max_length=50)
     skill_category = models.CharField(max_length=50, default='')
@@ -126,7 +129,11 @@ class Skills(models.Model):
 
 
 class Categories(models.Model):
-    skill_id = models.AutoField(primary_key=True)
+    # Из-за того, что модель не корректная, с ней очень сложно работать
+    # Добавь сюда skill_id -> обвяжи её с Skills, текущая версия skill_id – это тупо categpry_id, сейчас путает
+    # добавь сюда categpry_id -> удали skills_id
+
+    skill_id = models.AutoField(primary_key=True) #category_id
     category_title = models.CharField(max_length=50)
 
     def __str__(self):
