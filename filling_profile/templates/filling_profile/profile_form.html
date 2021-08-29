@@ -8,7 +8,7 @@
     <title>{% block title%} Заполнение профиля {% endblock %}</title>
 
 </head>
-<body>
+<body class="container">
 
 <!-- 
     1. Выводить форму данных (имя-емейл-контакты-языки)
@@ -73,20 +73,20 @@
 <form class="box block" action="{% url 'press_ok' %}">
         {% for category in categories %}
             <!-- Есть категория и у неё есть skills_set -->
-            <h3>{{ category.category_title }}</h3>
+            <h3 class="">{{ category.category_title }}</h3>
             <div class="tags are-medium">
                 {% for skill in skills %}
                     {% if category.category_title == skill.skill_category %}
-                    <span class="tag">
-                        <label class="checkbox">
-                            {% if skill.skill_category in user_skill_set %}
-                            <input type="checkbox" checked>
-                            {% else %}
-                            <input type="checkbox" >
-                            {% endif %}
-                            {{ skill.skill_title }}
-                        </label>
-                    </span>
+                        <span class="tag">
+                            <label class="checkbox">
+                                {% if skill.skill_category in user_skill_set %}
+                                    <input type="checkbox" checked>
+                                {% else %}
+                                    <input type="checkbox" >
+                                {% endif %}
+                                {{ skill.skill_title }}
+                            </label>
+                        </span>
                     {% endif %}
                 {% endfor %}
             </div>
