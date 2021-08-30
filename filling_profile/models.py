@@ -47,10 +47,6 @@ class UserManager(BaseUserManager):
         return user
 
 
-
-
-
-
 class Profile(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)
     full_name = models.CharField('полнейшее имя', max_length=50, blank=True)
@@ -71,11 +67,9 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name']
 
-
     # Сообщает Django, что определенный выше класс UserManager
     # должен управлять объектами этого типа.
     objects = UserManager()
-
 
     @property
     def token(self):
@@ -116,7 +110,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
 class Skills(models.Model):
     # Добавь сюда category_id
     # Удали skill_category, т.к он тут не нужен
-    
+
     skill_id = models.AutoField(primary_key=True)
     skill_title = models.CharField(max_length=50)
     skill_category = models.CharField(max_length=50, default='')
@@ -133,7 +127,7 @@ class Categories(models.Model):
     # Добавь сюда skill_id -> обвяжи её с Skills, текущая версия skill_id – это тупо categpry_id, сейчас путает
     # добавь сюда categpry_id -> удали skills_id
 
-    skill_id = models.AutoField(primary_key=True) #category_id
+    skill_id = models.AutoField(primary_key=True)  # category_id
     category_title = models.CharField(max_length=50)
 
     def __str__(self):
@@ -158,10 +152,17 @@ class Meet(models.Model):
     first_profile_id = models.CharField(max_length=20, blank=True)
     second_profile_id = models.CharField(max_length=20, blank=True)
     date_meeting = models.DateField(default=datetime.now(), null=True)
-    second_feedback = models.CharField(max_length=10, null=True)
-    goal_id = models.CharField(max_length=10, null=True)
+    goal_id = models.CharField(max_length=10, blank=True,null=True)
     status = models.CharField(max_length=10, null=True)
-    first_feedback=models.CharField(max_length=10, null=True)
+    first_feedback = models.CharField(max_length=10, blank=True, null=True)
+    second_feedback = models.CharField(max_length=10, blank=True, null=True)
+
 
     class Meta:
         db_table = 'Meet'
+
+    def __str__(self):
+        first_profile = Profile.objects.get(id=self.first_profile_id).full_name
+        second_profile = Profile.objects.get(id=self.second_profile_id).full_name
+
+        return str(f'{self.id}. {first_profile} & {second_profile}. Status: {self.status}')

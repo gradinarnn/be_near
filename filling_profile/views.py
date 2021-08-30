@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 import be_near.constants
 import json
 from filling_profile.send_notification import send_MEET_notification
@@ -85,6 +87,7 @@ def index(request):
 
     skills = Skills.objects.all()
     categories = Categories.objects.all()
+
 
     return render(request, 'filling_profile/profile_form.html',
               {'user': user, 'skills': skills, 'categories': categories,
@@ -500,6 +503,7 @@ def every_saturday():
                     callback_data=meeting_feedback.new(status="3")
 
                 ),
+
                 InlineKeyboardButton(
                     text='😍',
                     callback_data=meeting_feedback.new(status="4")
@@ -514,16 +518,16 @@ def every_saturday():
         ]
     )
 
-    for meets in all_active_meets:
+    for meet in all_active_meets:
         # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
         try:
-            first_profile = Profile.objects.get(id=meets.first_profile_id).contacts
+            first_profile = Profile.objects.get(id=meet.first_profile_id).contacts
             profile = True
         except Profile.DoesNotExist:
             profile = False
         if profile:
             
-            text = f'✨ Хэй, как прошла встреча с @{username_from_id(meets.second_profile_id)}? Можешь оценить встречу?'
+            text = f'✨ Хэй, как прошла встреча с @{username_from_id(meet.second_profile_id)}? Можешь оценить встречу?'
             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
 
             payload = {}
@@ -532,23 +536,23 @@ def every_saturday():
             response = requests.request("POST", url, headers=headers, data=payload)
         profile = False
         try:
-            second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
+            second_profile = Profile.objects.get(id=meet.second_profile_id).contacts
             profile = True
         except Profile.DoesNotExist:
             profile = False
         if profile:
 
 
-            text = f'✨ Хэй, как прошла встреча с @{username_from_id(meets.first_profile_id)}? Можешь оценить встречу?'
+            text = f'✨ Хэй, как прошла встреча с @{username_from_id(meet.first_profile_id)}? Можешь оценить встречу?'
             url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
             response = requests.request("POST", url, headers=headers, data=payload)
-
-        meets.save()
+        meet.status = "non_active"
+        meet.save()
 
 
 def run_threaded():
     schedule.every().wednesday.at("11:00").do(check_meeting_3_day,)
-    schedule.every().day.at("15:36").do(every_saturday,)
+    schedule.every().day.at("13:28").do(every_saturday,)
 
 
     while True:  # этот цикл отсчитывает время. Он обязателен.
@@ -576,32 +580,13 @@ class leave_feedback(APIView):
         # Сравниваем, наш ли это бот
         if machine_token == be_near.constants.a:
             # Определяем какой пользователь(первый или второй) прислал feedback
-            try:
-                meet = Meet.objects.get(status = 'active', first_profile_id = profile_id)
-                profile_number = 1
-            except Meet.DoesNotExist:
-                meet = Meet.objects.get(status='active', second_profile_id=profile_id)
-                profile_number = 2
-
-            if profile_number==1:
+            meet = Meet.objects.all().filter(Q(first_profile_id=profile_id)|Q(second_profile_id=profile_id), status='non_active').latest('date_meeting')
+            if profile_id == meet.first_profile_id:
                 meet.first_feedback = feedback
-                meet.save()
-                # Если пользователь, который прислал feedback, первый, а второй пользователь уже оставил feedback,
-                # то статус встречи  можно поставить non_active
-                if meet.second_feedback is not None:
-                    meet.status = "non_active"
-                    meet.save()
-            elif profile_number==2:
+            else:
                 meet.second_feedback = feedback
-                meet.save()
-                if meet.first_feedback is not None:
-                    meet.status = "non_active"
-                    meet.save()
 
-            print(f'****************Meet:{meet}'
-                  f'******profile_number:{profile_number}'
-                  f'************feedback:{feedback}'
-                  f'********meet.first_feedback:{meet.first_feedback}')
+            meet.save()
 
 
             return Response('ok', status=status.HTTP_200_OK)
