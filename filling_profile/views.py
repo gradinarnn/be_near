@@ -583,7 +583,7 @@ class leave_feedback(APIView):
             meet = Meet.objects.all().filter(Q(first_profile_id=profile_id)|Q(second_profile_id=profile_id), status='non_active').latest('date_meeting')
             if profile_id == meet.first_profile_id:
                 meet.first_feedback = feedback
-            else:
+            elif profile_id==meet.second_profile_id:
                 meet.second_feedback = feedback
 
             meet.save()
