@@ -581,9 +581,9 @@ class leave_feedback(APIView):
         if machine_token == be_near.constants.a:
             # Определяем какой пользователь(первый или второй) прислал feedback
             meet = Meet.objects.all().filter(Q(first_profile_id=profile_id)|Q(second_profile_id=profile_id), status='non_active').latest('date_meeting')
-            if profile_id == meet.first_profile_id:
+            if profile_id == int(meet.first_profile_id):
                 meet.first_feedback = feedback
-            elif profile_id==meet.second_profile_id:
+            elif profile_id==int(meet.second_profile_id):
                 meet.second_feedback = feedback
 
             meet.save()
