@@ -552,7 +552,7 @@ def every_saturday():
 
 def run_threaded():
     schedule.every().wednesday.at("11:00").do(check_meeting_3_day,)
-    schedule.every().day.at("14:58").do(every_saturday,)
+    schedule.every().day.at("15:09").do(every_saturday,)
 
 
     while True:  # этот цикл отсчитывает время. Он обязателен.
