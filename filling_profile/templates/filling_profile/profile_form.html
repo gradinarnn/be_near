@@ -28,20 +28,20 @@
         <div class="field">
             <label class="label">Ваше имя</label>
             <div class="control">
-                <input class="input" type="text" placeholder="Daniil" value="{{ forms.full_name }}">
+                <input class="input" type="text" placeholder="Daniil" value="{{ user.full_name }}">
               </div>
         </div>
 
         <div class="field">
             <label class="label">Ваше email</label>
             <div class="control">
-                <input class="input" type="email" placeholder="daniil@example.com" value="{{ forms.email }}">
+                <input class="input" type="email" placeholder="daniil@example.com" value="{{ user.email }}">
             </div>
         </div>
 
         <div class="field">
             <label class="label">Ваши навыки</label>
-            <H1>{{ user_skill_set }}</H1>
+            <H1>{{ user.skills }}</H1>
         </div>
 
     {% else %}
@@ -79,7 +79,7 @@
                     {% if category.category_title == skill.skill_category %}
                         <span class="tag">
                             <label class="checkbox">
-                                {% if skill.skill_category in user_skill_set %}
+                                {% if skill.skill_title in user_skill_set %}
                                     <input type="checkbox" checked>
                                 {% else %}
                                     <input type="checkbox" >
