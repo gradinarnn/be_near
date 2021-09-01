@@ -166,3 +166,15 @@ class Meet(models.Model):
         second_profile = Profile.objects.get(id=self.second_profile_id).full_name
 
         return str(f'{self.id}. {first_profile} & {second_profile}. Status: {self.status}')
+
+
+class Ten_Minutes_Meets_Profile_List(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=CASCADE)
+
+    def __str__(self):
+        return self.profile.full_name
+
+    class Meta:
+        db_table = 'Ten_Minutes_Meets_Profile_List'
+
+
