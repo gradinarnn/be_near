@@ -590,6 +590,8 @@ class leave_feedback(APIView):
 
 
             return Response('ok', status=status.HTTP_200_OK)
+        else:
+            return Response('not_ok', status=status.is_client_error(400))
 
 
 
