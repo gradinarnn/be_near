@@ -44,6 +44,7 @@ class Ready_to_Meet(APIView):
 
         # Сравниваем, наш ли это бот
         if machine_token == be_near.constants.a:
+            # Смотрим есть ли уже этот профиль в таблице
             try:
                 profile = Ten_Minutes_Profile_List.objects.get(profile=Profile.objects.get(id=profile_id))
                 profile_exist = True
@@ -51,21 +52,11 @@ class Ready_to_Meet(APIView):
             except Ten_Minutes_Profile_List.DoesNotExist:
                 profile_exist = False
                 print(f'Профиль не найден')
-
+            # Если профиль не найден, тогда закидываем его в таблицу
             if not profile_exist:
                 ten_minutes_profile = Ten_Minutes_Profile_List(profile=Profile.objects.get(id=profile_id))
                 ten_minutes_profile.save()
 
-
-
-
-
-
-
-
-
-
-
             return Response('ok', status=status.HTTP_200_OK)
         else:
-            return Response('not_ok', status=status.is_client_error(400))
+            return Response('we_do_not_know_you', status=400)
