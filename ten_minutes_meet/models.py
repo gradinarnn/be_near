@@ -31,7 +31,7 @@ class Ten_Minutes_Meet(models.Model):
         db_table = 'Ten_Minutes_Meet'
 
     def __str__(self):
-        first_profile = Ten_Minutes_Profile_List.objects.get(id=self.first_profile_id).full_name
-        second_profile = Ten_Minutes_Profile_List.objects.get(id=self.second_profile_id).full_name
+        first_profile = filling_profile.models.Profile.objects.get(id=self.first_profile_id).full_name
+        second_profile = filling_profile.models.Profile.objects.get(id=self.second_profile_id).full_name
 
         return str(f'{self.id}. {first_profile} & {second_profile}. Status: {self.status}')

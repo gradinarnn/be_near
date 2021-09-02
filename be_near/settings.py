@@ -43,9 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'filling_profile',
     'be_near',
     'ten_minutes_meet',
+    'telegram_services',
 
 ]
 

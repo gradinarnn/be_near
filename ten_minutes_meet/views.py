@@ -9,6 +9,7 @@ from be_near.constants import host, bot_token
 from filling_profile.telegram_function import username_from_id
 from filling_profile.CallbackData import checking_meeting, meeting_feedback
 
+
 import threading
 import schedule
 from aiogram.utils.callback_data import CallbackData
@@ -17,11 +18,11 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from filling_profile.models import Profile
 import requests
 import time
-
 import jwt
 import requests
 from django.shortcuts import render
 from rest_framework.generics import RetrieveUpdateAPIView
+
 
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -43,7 +44,11 @@ class Ready_to_Meet(APIView):
         if machine_token == be_near.constants.a:
 
             if Ten_Minutes_Profile_List.objects.all().count() == 0:
-                # Смотрим есть ли уже этот профиль в таблице
+
+                ten_minutes_profile = Ten_Minutes_Profile_List(profile=Profile.objects.get(id=profile_id))
+                ten_minutes_profile.save()
+
+            else:
                 try:
                     profile = Ten_Minutes_Profile_List.objects.get(profile=Profile.objects.get(id=profile_id))
                     profile_exist = True
@@ -51,14 +56,8 @@ class Ready_to_Meet(APIView):
                 except Ten_Minutes_Profile_List.DoesNotExist:
                     profile_exist = False
                     print(f'Профиль не найден')
-                # Если профиль не найден, тогда закидываем его в таблицу
                 if not profile_exist:
-                    ten_minutes_profile = Ten_Minutes_Profile_List(profile=Profile.objects.get(id=profile_id))
-                    ten_minutes_profile.save()
-
-                print(f'*********количество пользователей:{Ten_Minutes_Profile_List.objects.all().count()}')
-            else:
-                ten_minutes_meeting(profile_id)
+                    ten_minutes_meeting(profile_id)
 
             return Response('ok', status=status.HTTP_200_OK)
         else:
@@ -79,6 +78,8 @@ def ten_minutes_meeting(profile_id):
     meet.second_profile_id = second_profile.profile.id
     meet.status = 'active'
     meet.save()
+
+    send_message_to_2_telegram_users()
 
     Ten_Minutes_Profile_List.objects.filter(profile=Profile.objects.get(id=profile_id)).delete()
     Ten_Minutes_Profile_List.objects.filter(profile=Profile.objects.get(id=second_profile.profile.id)).delete()
