@@ -79,7 +79,7 @@ class LoginSerializer(serializers.Serializer):
 
             if companion is not None:
                 companion = Profile.objects.get(id = companion).contacts
-                url = f"https://api.telegram.org/bot{be_near.constants.bot_token}/getChatMember?user_id={companion}&chat_id={companion}"
+                url = f"https://api.telegram.org/bot{be_near.constants.main_bot_token}/getChatMember?user_id={companion}&chat_id={companion}"
 
                 payload={}
                 headers = {}

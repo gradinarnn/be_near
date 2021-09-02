@@ -3,12 +3,13 @@ from django.db.models import Q
 
 import be_near.constants
 import json
-from filling_profile.send_notification import send_MEET_notification
-import random
-from be_near.constants import host, bot_token
-from filling_profile.telegram_function import username_from_id
-from filling_profile.CallbackData import checking_meeting, meeting_feedback
 
+from telegram_services.send_message import get_telegram_id, get_username
+from telegram_services.send_message import send_message
+import random
+from be_near.constants import host, main_bot_token
+from filling_profile.CallbackData import checking_meeting, meeting_feedback
+from be_near.constants import ten_minutes_bot_token
 
 import threading
 import schedule
@@ -22,7 +23,6 @@ import jwt
 import requests
 from django.shortcuts import render
 from rest_framework.generics import RetrieveUpdateAPIView
-
 
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -73,16 +73,19 @@ def ten_minutes_meeting(profile_id):
     second_profile = all_profiles[i]
 
     meet = Ten_Minutes_Meet()
-
     meet.first_profile_id = profile_id
     meet.second_profile_id = second_profile.profile.id
     meet.status = 'active'
     meet.save()
 
-    send_message_to_2_telegram_users()
 
+    # Отправляем сообщения обоим профилям
+    send_message(bot_token=ten_minutes_bot_token, user_id=profile_id,
+                 text=f'{get_username(bot_token=ten_minutes_bot_token, user_id=profile_id)}, мы нашли тебе собеседника. У вас есть 10 минут, чтобы сотворить магию ✨')
+
+    send_message(bot_token=ten_minutes_bot_token, user_id=second_profile.profile.id,
+                 text=f'{get_username(bot_token=ten_minutes_bot_token, user_id=second_profile.profile.id)}, мы нашли тебе собеседника. У вас есть 10 минут, чтобы сотворить магию ✨')
+
+    # Удаляем профили из таблицы Ten_Minutes_Profile_List
     Ten_Minutes_Profile_List.objects.filter(profile=Profile.objects.get(id=profile_id)).delete()
     Ten_Minutes_Profile_List.objects.filter(profile=Profile.objects.get(id=second_profile.profile.id)).delete()
-
-
-
