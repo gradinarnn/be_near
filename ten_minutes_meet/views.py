@@ -64,6 +64,31 @@ class Ready_to_Meet(APIView):
             return Response('we_do_not_know_you', status=400)
 
 
+class Chatting(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        profile_id = Profile.objects.get(contacts=request.data.get('telegram_id', {})).id
+        machine_token = request.data.get('machine_token', {})
+        message = request.data.get('message', {})
+        # Сравниваем, наш ли это бот
+        if machine_token == be_near.constants.a:
+            meet = Ten_Minutes_Meet.objects.all().filter(
+                Q(first_profile_id=profile_id) | Q(second_profile_id=profile_id),
+                status='active').latest('date_meeting')
+
+            if profile_id == int(meet.first_profile_id):
+                send_message(ten_minutes_bot_token, meet.second_profile_id, message)
+            else:
+                send_message(ten_minutes_bot_token, meet.first_profile_id, message)
+            return Response('ok', status=status.HTTP_200_OK)
+        else:
+            return Response('we_do_not_know_you', status=400)
+
+
+
+
+
 def ten_minutes_meeting(profile_id):
     all_profiles = Ten_Minutes_Profile_List.objects.all()
 
@@ -77,7 +102,6 @@ def ten_minutes_meeting(profile_id):
     meet.second_profile_id = second_profile.profile.id
     meet.status = 'active'
     meet.save()
-
 
     # Отправляем сообщения обоим профилям
     send_message(bot_token=ten_minutes_bot_token, user_id=profile_id,

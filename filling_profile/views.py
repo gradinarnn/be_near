@@ -48,10 +48,6 @@ def index(request):
         payload = jwt.decode(token, 'q', algorithms="HS256")  # Передача id-шника
         user = Profile.objects.get(pk=payload['id'])
 
-        # print(f'---------view index user.contacts:{user.contacts}-------------------')
-        # print(f'---------view index contacts:{contacts}-------------------')
-        # print(f'---------view index user:{user}-------------------')
-
         if user.contacts == contacts:
             data = {"full_name": user.full_name,
                     "email": user.email,
@@ -527,7 +523,7 @@ def every_saturday():
         meet.save()
 
 
-def run_threaded():
+async def run_threaded():
     schedule.every().wednesday.at("11:00").do(check_meeting_3_day, )
     schedule.every().day.at("15:09").do(every_saturday, )
 
