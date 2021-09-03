@@ -1,3 +1,5 @@
+from sched import scheduler
+
 from django.db.models import Q
 
 import be_near.constants
@@ -320,12 +322,10 @@ class stop_meet_change_partner(APIView):
                 user_id_first = Profile.objects.get(id=qq.first_profile_id).contacts
                 user_id_second = Profile.objects.get(id=qq.second_profile_id).contacts
 
-
                 send_message(bot_token=main_bot_token, telegram_id=get_telegram_id(user_id_first),
                              text=f'Встреча отменена, нам очень жаль 🤧')
                 send_message(bot_token=main_bot_token, telegram_id=get_telegram_id(user_id_second),
                              text=f'Встреча отменена, нам очень жаль 🤧')
-
 
                 qq.save()
                 token1 = Profile.objects.get(contacts=user_id_first).token
@@ -502,7 +502,7 @@ def every_saturday():
         except Profile.DoesNotExist:
             profile = False
         if profile:
-            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token,get_telegram_id(meet.second_profile_id))}? Можешь оценить встречу?'
+            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.second_profile_id))}? Можешь оценить встречу?'
             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
 
             payload = {}
@@ -516,14 +516,40 @@ def every_saturday():
         except Profile.DoesNotExist:
             profile = False
         if profile:
-            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token,get_telegram_id(meet.first_profile_id))}? Можешь оценить встречу?'
+            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.first_profile_id))}? Можешь оценить встречу?'
             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
             response = requests.request("POST", url, headers=headers, data=payload)
         meet.status = "non_active"
         meet.save()
 
 
-async def run_threaded():
+# def writte(self):
+#     print(f'*************ЖИ ЕСТЬ******************')
+#
+#
+# def run_threaded():
+#     while True:  # этот цикл отсчитывает время. Он обязателен.
+#         schedule.run_pending()
+#         time.sleep(1)
+#
+#
+# job_thread = threading.Thread(target=run_threaded)
+# job_thread.start()
+#
+#
+# class new_schedule(APIView):
+#
+#     permission_classes = (AllowAny,)
+#
+#     def post(self, request):
+#         time1= request.data.get('time')
+#         print(f'*********time:{time1}')
+#         schedule.every().day.at(str(time1)).do(writte(self), )
+#         print(f"***********предстоящая очередь:{scheduler.queue}")
+#         return Response('ok', status=status.HTTP_200_OK)
+
+
+def run_threaded():
     schedule.every().wednesday.at("11:00").do(check_meeting_3_day, )
     schedule.every().day.at("15:09").do(every_saturday, )
 
