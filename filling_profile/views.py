@@ -27,7 +27,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from meeting.random_meeting.meeting import meeting
+from meeting.random_meeting.meeting import meeting, check_meeting_3_day, every_saturday
 from telegram_services.send_message import get_telegram_id, get_username
 from telegram_services.send_message import send_message
 from .forms import Filling_Profile_form
@@ -407,121 +407,121 @@ class stop_meet_change_partner(APIView):
             return Response('ok', status=status.HTTP_200_OK)
 
 
-def check_meeting_3_day():
-    text = f'🙌 Привет! Уже узпел паобщаться с собеседником?'
-    buttons = InlineKeyboardMarkup(
-        row_width=3,
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='Да, всё гуд',
-                    callback_data=checking_meeting.new(status="ok_good!"),
+# def check_meeting_3_day():
+#     text = f'🙌 Привет! Уже узпел паобщаться с собеседником?'
+#     buttons = InlineKeyboardMarkup(
+#         row_width=3,
+#         inline_keyboard=[
+#             [
+#                 InlineKeyboardButton(
+#                     text='Да, всё гуд',
+#                     callback_data=checking_meeting.new(status="ok_good!"),
+#
+#                 ),
+#                 InlineKeyboardButton(
+#                     text='Нет, ещё не общались',
+#                     callback_data=checking_meeting.new(status="not_communicate")
+#
+#                 ),
+#                 InlineKeyboardButton(
+#                     text='Парнёр не отвечает',
+#                     callback_data=checking_meeting.new(status="not_answer")
+#
+#                 )
+#             ]
+#         ]
+#     )
+#
+#     all_active_meets = Meet.objects.all().filter(status='active')
+#
+#     for meets in all_active_meets:
+#
+#         # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
+#         try:
+#             first_profile = Profile.objects.get(id=meets.first_profile_id).contacts
+#             profile = True
+#         except Profile.DoesNotExist:
+#             profile = False
+#         if profile:
+#             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
+#
+#             payload = {}
+#             headers = {}
+#
+#             response = requests.request("POST", url, headers=headers, data=payload)
+#         profile = False
+#         try:
+#             second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
+#             profile = True
+#         except Profile.DoesNotExist:
+#             profile = False
+#         if profile:
+#             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
+#             response = requests.request("POST", url, headers=headers, data=payload)
 
-                ),
-                InlineKeyboardButton(
-                    text='Нет, ещё не общались',
-                    callback_data=checking_meeting.new(status="not_communicate")
 
-                ),
-                InlineKeyboardButton(
-                    text='Парнёр не отвечает',
-                    callback_data=checking_meeting.new(status="not_answer")
-
-                )
-            ]
-        ]
-    )
-
-    all_active_meets = Meet.objects.all().filter(status='active')
-
-    for meets in all_active_meets:
-
-        # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
-        try:
-            first_profile = Profile.objects.get(id=meets.first_profile_id).contacts
-            profile = True
-        except Profile.DoesNotExist:
-            profile = False
-        if profile:
-            url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
-
-            payload = {}
-            headers = {}
-
-            response = requests.request("POST", url, headers=headers, data=payload)
-        profile = False
-        try:
-            second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
-            profile = True
-        except Profile.DoesNotExist:
-            profile = False
-        if profile:
-            url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
-            response = requests.request("POST", url, headers=headers, data=payload)
-
-
-def every_saturday():
-    all_active_meets = Meet.objects.all().filter(status='active')
-    buttons = InlineKeyboardMarkup(
-        row_width=5,
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='👎',
-                    callback_data=meeting_feedback.new(status="1")
-
-                ),
-                InlineKeyboardButton(
-                    text='😒',
-                    callback_data=meeting_feedback.new(status="2")
-
-                ),
-                InlineKeyboardButton(
-                    text='🙂',
-                    callback_data=meeting_feedback.new(status="3")
-
-                ),
-
-                InlineKeyboardButton(
-                    text='😍',
-                    callback_data=meeting_feedback.new(status="4")
-                ),
-                InlineKeyboardButton(
-                    text='👍',
-                    callback_data=meeting_feedback.new(status="5")
-                )
-
-            ]
-        ]
-    )
-
-    for meet in all_active_meets:
-        # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
-        try:
-            first_profile = Profile.objects.get(id=meet.first_profile_id).contacts
-            profile = True
-        except Profile.DoesNotExist:
-            profile = False
-        if profile:
-            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.second_profile_id))}? Можешь оценить встречу?'
-            url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
-
-            payload = {}
-            headers = {}
-
-            response = requests.request("POST", url, headers=headers, data=payload)
-        profile = False
-        try:
-            second_profile = Profile.objects.get(id=meet.second_profile_id).contacts
-            profile = True
-        except Profile.DoesNotExist:
-            profile = False
-        if profile:
-            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.first_profile_id))}? Можешь оценить встречу?'
-            url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
-            response = requests.request("POST", url, headers=headers, data=payload)
-        meet.status = "non_active"
-        meet.save()
+# def every_saturday():
+#     all_active_meets = Meet.objects.all().filter(status='active')
+#     buttons = InlineKeyboardMarkup(
+#         row_width=5,
+#         inline_keyboard=[
+#             [
+#                 InlineKeyboardButton(
+#                     text='👎',
+#                     callback_data=meeting_feedback.new(status="1")
+#
+#                 ),
+#                 InlineKeyboardButton(
+#                     text='😒',
+#                     callback_data=meeting_feedback.new(status="2")
+#
+#                 ),
+#                 InlineKeyboardButton(
+#                     text='🙂',
+#                     callback_data=meeting_feedback.new(status="3")
+#
+#                 ),
+#
+#                 InlineKeyboardButton(
+#                     text='😍',
+#                     callback_data=meeting_feedback.new(status="4")
+#                 ),
+#                 InlineKeyboardButton(
+#                     text='👍',
+#                     callback_data=meeting_feedback.new(status="5")
+#                 )
+#
+#             ]
+#         ]
+#     )
+#
+#     for meet in all_active_meets:
+#         # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
+#         try:
+#             first_profile = Profile.objects.get(id=meet.first_profile_id).contacts
+#             profile = True
+#         except Profile.DoesNotExist:
+#             profile = False
+#         if profile:
+#             text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.second_profile_id))}? Можешь оценить встречу?'
+#             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
+#
+#             payload = {}
+#             headers = {}
+#
+#             response = requests.request("POST", url, headers=headers, data=payload)
+#         profile = False
+#         try:
+#             second_profile = Profile.objects.get(id=meet.second_profile_id).contacts
+#             profile = True
+#         except Profile.DoesNotExist:
+#             profile = False
+#         if profile:
+#             text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.first_profile_id))}? Можешь оценить встречу?'
+#             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
+#             response = requests.request("POST", url, headers=headers, data=payload)
+#         meet.status = "non_active"
+#         meet.save()
 
 
 # def writte(self):
@@ -552,11 +552,9 @@ def every_saturday():
 
 def run_threaded():
 
-
     schedule.every().monday.at("11:00").do(meeting(), )
-
     schedule.every().wednesday.at("11:00").do(check_meeting_3_day, )
-    schedule.every().day.at("15:09").do(every_saturday, )
+    schedule.every().saturday.at("18:00").do(every_saturday, )
 
     while True:  # этот цикл отсчитывает время. Он обязателен.
         schedule.run_pending()

@@ -1,4 +1,3 @@
-
 from sched import scheduler
 
 from django.db.models import Q
@@ -24,10 +23,8 @@ import requests
 from telegram_services.send_message import get_telegram_id, get_username
 from telegram_services.send_message import send_message
 
+"""  Запустить процес формирования встреч  """
 
-
-
-# Запустить процес формирования встреч
 def meeting():
     all_profiles = Profile_for_Metting.objects.all()
 
@@ -116,3 +113,124 @@ def meeting():
         if meeting_success == True:
             print(f'-------------Удаляем пользователя: {all_profiles[second_profile_number]}---------------------')
             all_profiles.pop(second_profile_number)
+
+
+"""  Проверка в среду, удалось ли связаться с собеседником  """
+
+def check_meeting_3_day():
+    text = f'🙌 Привет! Уже узпел паобщаться с собеседником?'
+    buttons = InlineKeyboardMarkup(
+        row_width=3,
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text='Да, всё гуд',
+                    callback_data=checking_meeting.new(status="ok_good!"),
+
+                ),
+                InlineKeyboardButton(
+                    text='Нет, ещё не общались',
+                    callback_data=checking_meeting.new(status="not_communicate")
+
+                ),
+                InlineKeyboardButton(
+                    text='Парнёр не отвечает',
+                    callback_data=checking_meeting.new(status="not_answer")
+
+                )
+            ]
+        ]
+    )
+
+    all_active_meets = Meet.objects.all().filter(status='active')
+
+    for meets in all_active_meets:
+
+        # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
+        try:
+            first_profile = Profile.objects.get(id=meets.first_profile_id).contacts
+            profile = True
+        except Profile.DoesNotExist:
+            profile = False
+        if profile:
+            url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
+
+            payload = {}
+            headers = {}
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+        profile = False
+        try:
+            second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
+            profile = True
+        except Profile.DoesNotExist:
+            profile = False
+        if profile:
+            url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
+            response = requests.request("POST", url, headers=headers, data=payload)
+
+
+"""  В воскресенье отправляем сообщение для оценки встречи  """
+
+def every_saturday():
+    all_active_meets = Meet.objects.all().filter(status='active')
+    buttons = InlineKeyboardMarkup(
+        row_width=5,
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text='👎',
+                    callback_data=meeting_feedback.new(status="1")
+
+                ),
+                InlineKeyboardButton(
+                    text='😒',
+                    callback_data=meeting_feedback.new(status="2")
+
+                ),
+                InlineKeyboardButton(
+                    text='🙂',
+                    callback_data=meeting_feedback.new(status="3")
+
+                ),
+
+                InlineKeyboardButton(
+                    text='😍',
+                    callback_data=meeting_feedback.new(status="4")
+                ),
+                InlineKeyboardButton(
+                    text='👍',
+                    callback_data=meeting_feedback.new(status="5")
+                )
+
+            ]
+        ]
+    )
+
+    for meet in all_active_meets:
+        # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
+        try:
+            first_profile = Profile.objects.get(id=meet.first_profile_id).contacts
+            profile = True
+        except Profile.DoesNotExist:
+            profile = False
+        if profile:
+            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.second_profile_id))}? Можешь оценить встречу?'
+            url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
+
+            payload = {}
+            headers = {}
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+        profile = False
+        try:
+            second_profile = Profile.objects.get(id=meet.second_profile_id).contacts
+            profile = True
+        except Profile.DoesNotExist:
+            profile = False
+        if profile:
+            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.first_profile_id))}? Можешь оценить встречу?'
+            url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
+            response = requests.request("POST", url, headers=headers, data=payload)
+        meet.status = "non_active"
+        meet.save()
