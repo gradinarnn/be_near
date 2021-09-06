@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'be_near',
     'ten_minutes_meet',
     'telegram_services',
+    'meeting',
 
 ]
 
