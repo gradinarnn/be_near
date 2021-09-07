@@ -206,7 +206,7 @@ def every_saturday():
             ]
         ]
     )
-
+    print(f'**********all_active_meets из every_saturday:{all_active_meets}')
     for meet in all_active_meets:
         # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
         try:
@@ -215,7 +215,8 @@ def every_saturday():
         except Profile.DoesNotExist:
             profile = False
         if profile:
-            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.second_profile_id))}? Можешь оценить встречу?'
+            print(f'**********meet.second_profile_id из every_saturday:{meet.second_profile_id}')
+            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, meet.second_profile_id)}? Можешь оценить встречу?'
             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
 
             payload = {}
@@ -229,7 +230,8 @@ def every_saturday():
         except Profile.DoesNotExist:
             profile = False
         if profile:
-            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.first_profile_id))}? Можешь оценить встречу?'
+            print(f'**********meet.first_profile_id из every_saturday:{meet.first_profile_id}')
+            text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, meet.first_profile_id)}? Можешь оценить встречу?'
             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
             response = requests.request("POST", url, headers=headers, data=payload)
         meet.status = "non_active"
