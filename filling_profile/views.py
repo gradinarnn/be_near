@@ -559,9 +559,9 @@ class stop_meet_change_partner(APIView):
 
 def run_threaded():
 
-    schedule.every().day.at("16:11").do(meeting, )
-    schedule.every().day.at("16:12").do(check_meeting_3_day, )
-    schedule.every().day.at("16:13").do(every_saturday, )
+    schedule.every().monday.at("08:00").do(meeting, )
+    schedule.every().wednesday.at("08:00").do(check_meeting_3_day, )
+    schedule.every().saturday.at("16:00").do(every_saturday, )
 
     while True:  # этот цикл отсчитывает время. Он обязателен.
         schedule.run_pending()
