@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Profile, Skills
+from .models import Profile, Skill
 
 
 class Filling_Profile_form(forms.ModelForm):

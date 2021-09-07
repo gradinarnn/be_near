@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 import requests
 import be_near.constants
-from .models import Meet, Profile, Profile_for_Metting, Skills
+from .models import Meet, Profile, Profile_for_Metting, Skill
 
 
 class RegistrationSerializer(serializers.ModelSerializer):

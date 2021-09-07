@@ -30,8 +30,9 @@ from rest_framework.views import APIView
 from meeting.random_meeting.meeting import meeting, check_meeting_3_day, every_saturday
 from telegram_services.send_message import get_telegram_id, get_username
 from telegram_services.send_message import send_message
+from .filling_db import doing_filling_db
 from .forms import Filling_Profile_form
-from .models import Meet, Profile, Profile_for_Metting, Skills, Categories
+from .models import Meet, Profile, Profile_for_Metting, Skill, Category
 from .renderers import UserJSONRenderer
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer,
@@ -78,8 +79,8 @@ def index(request):
         user = ''
         user_skill_set = ''
 
-    skills = Skills.objects.all()
-    categories = Categories.objects.all()
+    skills = Skill.objects.all()
+    categories = Category.objects.all()
 
     return render(request, 'filling_profile/profile_form.html',
                   {'user': user, 'skills': skills, 'categories': categories,
@@ -122,8 +123,8 @@ def press_ok(request):
         user = request.user
         user_skill_set = user.skills.split(',')
 
-    skills = Skills.objects.all()
-    categories = Categories.objects.all()
+    skills = Skill.objects.all()
+    categories = Category.objects.all()
 
     return render(request, 'filling_profile/profile_form.html',
                   {'user': user, 'forms': forms, 'skills': skills, 'categories': categories,
@@ -558,9 +559,9 @@ class stop_meet_change_partner(APIView):
 
 def run_threaded():
 
-    schedule.every().monday.at("11:00").do(meeting, )
-    schedule.every().wednesday.at("11:00").do(check_meeting_3_day, )
-    schedule.every().saturday.at("18:00").do(every_saturday, )
+    schedule.every().day.at("16:11").do(meeting, )
+    schedule.every().day.at("16:12").do(check_meeting_3_day, )
+    schedule.every().day.at("16:13").do(every_saturday, )
 
     while True:  # этот цикл отсчитывает время. Он обязателен.
         schedule.run_pending()
@@ -595,6 +596,18 @@ class leave_feedback(APIView):
             return Response('ok', status=status.HTTP_200_OK)
         else:
             return Response('not_ok', status=status.is_client_error(400))
+
+
+#для заполнения БД скиллами и категориями передать в параметрах запроса "machine_token":"значение"
+class filling_db(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        machine_token = request.data.get('machine_token', {})
+        doing_filling_db(machine_token)
+
+        return Response('ok', status=status.HTTP_200_OK)
+
 
 # def match_skills_category(skills, categories):
 #     # Бинарный поиск для склейки данных

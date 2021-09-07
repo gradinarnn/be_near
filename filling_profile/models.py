@@ -107,7 +107,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         return token
 
 
-class Categories(models.Model):
+class Category(models.Model):
     category_id = models.AutoField(primary_key=True)  # category_id
     category_title = models.CharField(max_length=50)
 
@@ -116,13 +116,14 @@ class Categories(models.Model):
 
     class Meta:
         db_table = 'Categories'
+        verbose_name_plural = "Categories"
 
 
 
-class Skills(models.Model):
+class Skill(models.Model):
     skill_id = models.AutoField(primary_key=True)
     skill_title = models.CharField(max_length=50)
-    category = models.OneToOneField(Categories, on_delete=CASCADE, blank=True,null=True)
+    category = models.ForeignKey(Category, on_delete=CASCADE, blank=True,null=True)
 
     def __str__(self):
         return f'{self.category.category_id}.{self.category.category_title} : {self.skill_id}.{self.skill_title}'
