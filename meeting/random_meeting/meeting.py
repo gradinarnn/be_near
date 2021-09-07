@@ -71,10 +71,10 @@ def meeting():
                 meeting.save()
 
                 send_message(bot_token=main_bot_token, user_id=first_profile.profile_id,
-                             text=f'Мы нашли тебе себеседника @{get_username(bot_token=main_bot_token, user_id=second_profile.profile_id)}')
+                             text=f'Мы нашли тебе себеседника @{get_username(bot_token=main_bot_token, user_id=second_profile.profile_id)}. Ему интересно: {second_profile.profile.skills}.Приятной встречи 🌱')
 
                 send_message(bot_token=main_bot_token, user_id=second_profile.profile_id,
-                             text=f'Мы нашли тебе себеседника @{get_username(bot_token=main_bot_token, user_id=first_profile.profile_id)}')
+                             text=f'Мы нашли тебе себеседника @{get_username(bot_token=main_bot_token, user_id=first_profile.profile_id)}. Ему интересно: {first_profile.profile.skills}.Приятной встречи 🌱')
 
                 # меняем статус встречи первого пользователя на "meeting"
                 token_value = Profile.objects.get(id=first_profile.profile_id).token
