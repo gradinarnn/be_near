@@ -61,7 +61,7 @@ def index(request):
 
             forms = Filling_Profile_form(data)
 
-            user_skill_set = user.skills.split(',')  # Получаю текущий список скиллов юзера
+            # skills = user.skills  # Получаю текущий список скиллов юзера
             # Убираю проверку, будет доступна на выводе
             # if skills_editing_profile != None:
             #     skills_editing_profile_list = skills_editing_profile.split(',')
@@ -77,14 +77,12 @@ def index(request):
     else:
         forms = Filling_Profile_form
         user = ''
-        user_skill_set = ''
 
     skills = Skill.objects.all()
     categories = Category.objects.all()
 
     return render(request, 'filling_profile/profile_form.html',
-                  {'user': user, 'skills': skills, 'categories': categories,
-                   'user_skill_set': user_skill_set, 'forms': forms})
+                  {'user': user, 'skills': skills, 'categories': categories, 'forms': forms})
 
 
 def press_ok(request):
@@ -114,21 +112,18 @@ def press_ok(request):
             prof.save()
 
         user = editing_profile
-        user_skill_set = user.skills.split(',')
 
 
 
     else:
         forms = Filling_Profile_form
         user = request.user
-        user_skill_set = user.skills.split(',')
 
     skills = Skill.objects.all()
     categories = Category.objects.all()
 
     return render(request, 'filling_profile/profile_form.html',
-                  {'user': user, 'forms': forms, 'skills': skills, 'categories': categories,
-                   'user_skill_set': user_skill_set})
+                  {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
 
 
 def login(request):

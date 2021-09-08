@@ -76,10 +76,10 @@
             <h3 class="">{{ category.category_title }}</h3>
             <div class="tags are-medium">
                 {% for skill in skills %}
-                    {% if category.category_title == skill.skill_category %}
+                    {% if category.category_id == skill.category.category_id %}
                         <span class="tag">
                             <label class="checkbox">
-                                {% if skill.skill_title in user_skill_set %}
+                                {% if skill.skill_title in user.skills %}
                                     <input type="checkbox" checked>
                                 {% else %}
                                     <input type="checkbox" >
