@@ -51,6 +51,7 @@ def index(request):
 
         payload = jwt.decode(token, 'q', algorithms="HS256")  # Передача id-шника
         user = Profile.objects.get(pk=payload['id'])
+        # print(request.user)
 
         if user.contacts == contacts:
             data = {"full_name": user.full_name,
@@ -127,10 +128,13 @@ def press_ok(request):
 
 def update_skills(request):
     if request.method == "POST":
+        print(request.user)
 
         try:
             editing_profile = request.user
-            editing_profile.skills = request.POST['skills_list']
+            print(request.POST)
+            # print(request.POST['skills'])
+            editing_profile.skills = request.POST.get('skills')
             editing_profile.save()
 
         except Profile.DoesNotExist:
@@ -140,11 +144,13 @@ def update_skills(request):
     else:
         user = request.user
 
+    user = editing_profile
+
     skills = Skill.objects.all()
     categories = Category.objects.all()
 
-    return render(request, 'filling_profile/profile_form.html',
-                    {'user':user, 'forms':forms, 'skills':skills, 'categories':'categories'})
+    return render(request, request.url,
+                  {'user':user, 'forms':forms, 'skills':skills, 'categories':'categories'})
 
     
 
