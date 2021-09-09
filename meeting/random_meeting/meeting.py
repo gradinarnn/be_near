@@ -30,10 +30,11 @@ def meeting():
 
     while len(all_profiles) > 0:
         print(f'-------------Весь список до взятия первого: {all_profiles}---------------------')
+        print(f'-------------Длинна списка len(all_profiles): {len(all_profiles)}---------------------')
         all_profiles = list(all_profiles)
         print(f'-------------all_profiles list: {all_profiles}---------------------')
         first_profile = all_profiles.pop(0)
-        print(f'-------------Первый пользователь: {first_profile.profile_id}---------------------')
+        print(f'-------------Первый пользователь <profile_id>:<full_name>: {first_profile.profile.id}:{first_profile.profile.full_name}---------------------')
         print(f'-------------Весь список после взятия первого: {all_profiles}---------------------')
 
         selection_list = all_profiles.copy()
@@ -41,23 +42,24 @@ def meeting():
         meeting_success = False
         while (len(selection_list) > 0) and (not meeting_success):
             second_profile_number = random.randint(0, len(selection_list) - 1)
+
             second_profile = selection_list.pop(second_profile_number)
+            print(f'-------------len(selection_list): {len(selection_list)}-------------------')
             print(f'-------------Второй пользователь: {second_profile.profile_id}-------------------')
             print(f'-------------Весь список после взятия второго: {all_profiles}---------------------')
-            print(f'-------------Cписок в котором ищется второй: {selection_list}---------------------')
+            print(f'-------------Cписок в котором искался второй: {selection_list}---------------------')
 
             # if ..... проверка встречались ли first_profile и second_profile до этого
 
-            meeting_list = list(Meet.objects.all().filter(first_profile_id=first_profile.profile_id)) + list(
-                Meet.objects.all().filter(second_profile_id=first_profile.profile_id))
+            meeting_list = list(Meet.objects.all().filter(Q(first_profile_id=first_profile.profile_id) | Q(second_profile_id=first_profile.profile_id)))
 
             print(f'-------------Список в котором {first_profile} есть: {meeting_list}---------------------')
 
             meeting_indicator = False
             for meet in meeting_list:
-
-                if (second_profile.profile_id == meet.first_profile_id) or (
-                        second_profile.profile_id == meet.second_profile_id):
+                print(f'-------------meet:{meet}')
+                print(f'-------------second_profile.profile_id == meet.first_profile_id:{int(second_profile.profile_id) == int(meet.first_profile_id)}, second_profile.profile_id == meet.second_profile_id:{int(second_profile.profile_id) == int(meet.second_profile_id)} ---------------------')
+                if (int(second_profile.profile_id) == int(meet.first_profile_id)) or (int(second_profile.profile_id) == int(meet.second_profile_id)):
                     meeting_indicator = True
                     print(
                         f'-------------meeting_indicator = {meeting_indicator}. А весь список при этом: {all_profiles}')
@@ -109,6 +111,9 @@ def meeting():
 
                 print(f'------------Такая пара уже была--------------')
                 print(f'-------------А весь список при этом: {all_profiles}---------------------')
+
+            print(f'-------------len(selection_list): {len(selection_list)}-------------------')
+            print(f'-------------not meeting_success: {not meeting_success}-------------------')
 
         if meeting_success == True:
             print(f'-------------Удаляем пользователя: {all_profiles[second_profile_number]}---------------------')
