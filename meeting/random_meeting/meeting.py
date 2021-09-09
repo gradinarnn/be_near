@@ -20,6 +20,7 @@ import time
 import jwt
 import requests
 
+from meeting.random_meeting.change_meeting_status import change_meeting_status
 from telegram_services.send_message import get_telegram_id, get_username
 from telegram_services.send_message import send_message
 
@@ -79,32 +80,10 @@ def meeting():
                              text=f'Мы нашли тебе себеседника @{get_username(bot_token=main_bot_token, user_id=first_profile.profile_id)}. Ему интересно: {first_profile.profile.skills}.Приятной встречи 🌱')
 
                 # меняем статус встречи первого пользователя на "meeting"
-                token_value = Profile.objects.get(id=first_profile.profile_id).token
-                payload_data = {"meeting_status": "meetting"}
-                payload_dict = {"profile": payload_data}
-                payload = json.dumps(payload_dict)
-
-                url = host + "/filling_profile/user/"
-                token = 'Bearer ' + token_value
-                headers = {
-                    'Authorization': token,
-                    'Content-Type': 'application/json'
-                }
-                response = requests.request("PATCH", url, headers=headers, data=payload)
+                change_meeting_status(user_id=first_profile.profile_id, status="meetting")
 
                 # меняем статус встречи второго пользователя на "meeting"
-                token_value = Profile.objects.get(id=second_profile.profile_id).token
-                payload_data = {"meeting_status": "meetting"}
-                payload_dict = {"profile": payload_data}
-                payload = json.dumps(payload_dict)
-
-                url = host + "/filling_profile/user/"
-                token = 'Bearer ' + token_value
-                headers = {
-                    'Authorization': token,
-                    'Content-Type': 'application/json'
-                }
-                response = requests.request("PATCH", url, headers=headers, data=payload)
+                change_meeting_status(user_id=second_profile.profile_id, status="meetting")
 
                 meeting_success = True
             else:
