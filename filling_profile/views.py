@@ -125,6 +125,29 @@ def press_ok(request):
     return render(request, 'filling_profile/profile_form.html',
                   {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
 
+def update_skills(request):
+    if request.method == "POST":
+
+        try:
+            editing_profile = request.user
+            editing_profile.skills = request.POST['skills_list']
+            editing_profile.save()
+
+        except Profile.DoesNotExist:
+            print('Do something')
+
+
+    else:
+        user = request.user
+
+    skills = Skill.objects.all()
+    categories = Category.objects.all()
+
+    return render(request, 'filling_profile/profile_form.html',
+                    {'user':user, 'forms':forms, 'skills':skills, 'categories':'categories'})
+
+    
+
 
 def login(request):
     return render(request, 'login.html')

@@ -41,7 +41,7 @@
 
         <div class="field">
             <label class="label">Ваши навыки</label>
-            <H1>{{ user.skills }}</H1>
+            <H1 id='skills_list' name="skills_list">{{ user.skills }}</H1>
         </div>
 
     {% else %}
@@ -61,7 +61,7 @@
 
         <div class="field">
             <label class="label">Ваши навыки</label>
-            <H1>–</H1>
+            <H1 id='skills_list' name="skills_list">–</H1>
         </div>
 
     {% endif %}
@@ -70,7 +70,8 @@
 </div>
 
 <!-- Вывод категорий выбранных и пр -->
-<form class="box block" action="{% url 'press_ok' %}">
+<!-- <form class="box block" action="{% url 'press_ok' %}"> -->
+<form class="box block" action="{% url 'update_skills' %}" method="POST">
         {% for category in categories %}
             <!-- Есть категория и у неё есть skills_set -->
             <h3 class="">{{ category.category_title }}</h3>
@@ -80,9 +81,9 @@
                         <span class="tag">
                             <label class="checkbox">
                                 {% if skill.skill_title in user.skills %}
-                                    <input type="checkbox" checked>
+                                    <input name="skills" type="checkbox" value="{{skill.skill_title}}" checked>
                                 {% else %}
-                                    <input type="checkbox" >
+                                    <input name="skills" type="checkbox" value="{{skill.skill_title}}">
                                 {% endif %}
                                 {{ skill.skill_title }}
                             </label>
@@ -93,39 +94,45 @@
             <br>
         {% endfor %}
 
-    <button type="submit" class="button is-link is-light is-normal">Обновить</button>
+    <button type="submit" class="button is-link is-light is-normal" id='update'>Обновить</button>
+    <p id="skills-texts"></p>
 
 </form>
 
-<!-- 
-<div class="container">
-    <div class="content">
-    <h3>Страна поиска собеседника</h3>
-        <p class="subtitle is-6">Если страна не указана, мы будем искать по всему миру</p>
-    </div>
 
-            <div class="select">
-              <select>
-                <option>Россия</option>
-                <option>USA</option>
-                <option>Белорусия</option>
-              </select>
-            </div>
-
-    </div>
+<script>
+    function getSelectedCheckboxValues(name) {
+        const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
+        let values = [];
+        checkboxes.forEach((checkbox) => {
+            values.push(checkbox.value);
+        });
+        return values;
+    }
 
 
-    <br>
-    <br>
+    const btn = document.querySelector('#update')
+    const text_skills = document.querySelector('#skills_list'); 
+
+    btn.addEventListener('click', (event) => {
+        text_skills.innerHTML = getSelectedCheckboxValues('skills');
+
+        // let xhr = new XMLHttpRequest();
+        // xhr.open('POST', "{% url 'update_skills' %}");
+        // xhr.send(getSelectedCheckboxValues('skills'));
+        // alert('Message was send');
+
+        // xhr.upload.onerror = function() {
+        //     alert(`Произошла ошибка во время отправки: ${xhr.status}`);
+        // };
+        // text.innerHTML = getSelectedCheckboxValues('skills');
+
+    });
 
 
-    <button class="button is-danger is-rounded" type="submit" >Найти мне собеседника</button>
- -->
 
 
-    
-
-
+</script>
 {% endblock%}
 
 </body>

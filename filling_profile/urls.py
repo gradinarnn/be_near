@@ -8,6 +8,7 @@ from .views import RegistrationAPIView, LoginAPIView, UserRetrieveUpdateAPIView,
 urlpatterns = [
     path('', views.index, name='index'),
     path('press_ok', views.press_ok, name='press_ok'),
+    path('update_skills', views.update_skills, name='update_skills'),
     path('login', views.login, name='login'),
     path('users/', RegistrationAPIView.as_view()),
     path('users/login/', LoginAPIView.as_view()),
