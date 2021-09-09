@@ -207,6 +207,8 @@ def every_saturday():
             headers = {}
 
             response = requests.request("POST", url, headers=headers, data=payload)
+            change_meeting_status(user_id=meet.first_profile_id, status="not ready")
+
         profile = False
         try:
             second_profile = Profile.objects.get(id=meet.second_profile_id).contacts
@@ -218,5 +220,6 @@ def every_saturday():
             text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, meet.first_profile_id)}? Можешь оценить встречу?'
             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
             response = requests.request("POST", url, headers=headers, data=payload)
+            change_meeting_status(user_id=meet.second_profile_id, status="not ready")
         meet.status = "non_active"
         meet.save()
