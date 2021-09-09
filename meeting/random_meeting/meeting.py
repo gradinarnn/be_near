@@ -20,6 +20,7 @@ import time
 import jwt
 import requests
 
+from meeting.random_meeting.change_meeting_status import change_meeting_status
 from telegram_services.send_message import get_telegram_id, get_username
 from telegram_services.send_message import send_message
 
@@ -30,10 +31,11 @@ def meeting():
 
     while len(all_profiles) > 0:
         print(f'-------------Весь список до взятия первого: {all_profiles}---------------------')
+        print(f'-------------Длинна списка len(all_profiles): {len(all_profiles)}---------------------')
         all_profiles = list(all_profiles)
         print(f'-------------all_profiles list: {all_profiles}---------------------')
         first_profile = all_profiles.pop(0)
-        print(f'-------------Первый пользователь: {first_profile.profile_id}---------------------')
+        print(f'-------------Первый пользователь <profile_id>:<full_name>: {first_profile.profile.id}:{first_profile.profile.full_name}---------------------')
         print(f'-------------Весь список после взятия первого: {all_profiles}---------------------')
 
         selection_list = all_profiles.copy()
@@ -41,23 +43,24 @@ def meeting():
         meeting_success = False
         while (len(selection_list) > 0) and (not meeting_success):
             second_profile_number = random.randint(0, len(selection_list) - 1)
+
             second_profile = selection_list.pop(second_profile_number)
+            print(f'-------------len(selection_list): {len(selection_list)}-------------------')
             print(f'-------------Второй пользователь: {second_profile.profile_id}-------------------')
             print(f'-------------Весь список после взятия второго: {all_profiles}---------------------')
-            print(f'-------------Cписок в котором ищется второй: {selection_list}---------------------')
+            print(f'-------------Cписок в котором искался второй: {selection_list}---------------------')
 
             # if ..... проверка встречались ли first_profile и second_profile до этого
 
-            meeting_list = list(Meet.objects.all().filter(first_profile_id=first_profile.profile_id)) + list(
-                Meet.objects.all().filter(second_profile_id=first_profile.profile_id))
+            meeting_list = list(Meet.objects.all().filter(Q(first_profile_id=first_profile.profile_id) | Q(second_profile_id=first_profile.profile_id)))
 
             print(f'-------------Список в котором {first_profile} есть: {meeting_list}---------------------')
 
             meeting_indicator = False
             for meet in meeting_list:
-
-                if (second_profile.profile_id == meet.first_profile_id) or (
-                        second_profile.profile_id == meet.second_profile_id):
+                print(f'-------------meet:{meet}')
+                print(f'-------------second_profile.profile_id == meet.first_profile_id:{int(second_profile.profile_id) == int(meet.first_profile_id)}, second_profile.profile_id == meet.second_profile_id:{int(second_profile.profile_id) == int(meet.second_profile_id)} ---------------------')
+                if (int(second_profile.profile_id) == int(meet.first_profile_id)) or (int(second_profile.profile_id) == int(meet.second_profile_id)):
                     meeting_indicator = True
                     print(
                         f'-------------meeting_indicator = {meeting_indicator}. А весь список при этом: {all_profiles}')
@@ -77,38 +80,19 @@ def meeting():
                              text=f'Мы нашли тебе себеседника @{get_username(bot_token=main_bot_token, user_id=first_profile.profile_id)}. Ему интересно: {first_profile.profile.skills}.Приятной встречи 🌱')
 
                 # меняем статус встречи первого пользователя на "meeting"
-                token_value = Profile.objects.get(id=first_profile.profile_id).token
-                payload_data = {"meeting_status": "meetting"}
-                payload_dict = {"profile": payload_data}
-                payload = json.dumps(payload_dict)
-
-                url = host + "/filling_profile/user/"
-                token = 'Bearer ' + token_value
-                headers = {
-                    'Authorization': token,
-                    'Content-Type': 'application/json'
-                }
-                response = requests.request("PATCH", url, headers=headers, data=payload)
+                change_meeting_status(user_id=first_profile.profile_id, status="meetting")
 
                 # меняем статус встречи второго пользователя на "meeting"
-                token_value = Profile.objects.get(id=second_profile.profile_id).token
-                payload_data = {"meeting_status": "meetting"}
-                payload_dict = {"profile": payload_data}
-                payload = json.dumps(payload_dict)
-
-                url = host + "/filling_profile/user/"
-                token = 'Bearer ' + token_value
-                headers = {
-                    'Authorization': token,
-                    'Content-Type': 'application/json'
-                }
-                response = requests.request("PATCH", url, headers=headers, data=payload)
+                change_meeting_status(user_id=second_profile.profile_id, status="meetting")
 
                 meeting_success = True
             else:
 
                 print(f'------------Такая пара уже была--------------')
                 print(f'-------------А весь список при этом: {all_profiles}---------------------')
+
+            print(f'-------------len(selection_list): {len(selection_list)}-------------------')
+            print(f'-------------not meeting_success: {not meeting_success}-------------------')
 
         if meeting_success == True:
             print(f'-------------Удаляем пользователя: {all_profiles[second_profile_number]}---------------------')
@@ -223,6 +207,8 @@ def every_saturday():
             headers = {}
 
             response = requests.request("POST", url, headers=headers, data=payload)
+            change_meeting_status(user_id=meet.first_profile_id, status="not ready")
+
         profile = False
         try:
             second_profile = Profile.objects.get(id=meet.second_profile_id).contacts
@@ -234,5 +220,6 @@ def every_saturday():
             text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, meet.first_profile_id)}? Можешь оценить встречу?'
             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
             response = requests.request("POST", url, headers=headers, data=payload)
+            change_meeting_status(user_id=meet.second_profile_id, status="not ready")
         meet.status = "non_active"
         meet.save()
