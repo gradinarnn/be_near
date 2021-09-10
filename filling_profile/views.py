@@ -150,11 +150,11 @@ def update_skills(request):
     skills = Skill.objects.all()
     categories = Category.objects.all()
 
-    return redirect(request.headers['REFERER'],
-                    {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
+    # return redirect(request.headers['REFERER'],
+    #                 {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
 
-    # return render(request, request.Meta['HTTP_REFERER'],
-    #               {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
+    return render(request, 'filling_profile/profile_form.html',
+                  {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
 
 
 def login(request):
