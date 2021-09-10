@@ -134,7 +134,7 @@ def update_skills(request):
         forms = Filling_Profile_form(request.POST)
         try:
             editing_profile = request.user
-            editing_profile.skills = request.POST.get('skills')
+            editing_profile.skills = request.POST.get('skills-texts')
             editing_profile.save()
 
         except Profile.DoesNotExist:
