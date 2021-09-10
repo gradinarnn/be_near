@@ -40,6 +40,17 @@ from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer,
 )
 
+def token_decoder(req):
+    token = req.GET.get('token')
+    if token != None:
+        contacts = req.GET.get('contacts')
+
+        playload = jwt.decode(token, 'q', algorithms="HS256")
+        user = Profile.objects.get(pk=playload['id'])
+
+        return user
+    else:
+        return None
 
 def index(request):
     # На этом этапе склеиваем выбранные навыки и те, что есть в целом
