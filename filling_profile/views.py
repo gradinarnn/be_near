@@ -21,7 +21,7 @@ import time
 
 import jwt
 import requests
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from rest_framework.generics import RetrieveUpdateAPIView
 
 from rest_framework import status
@@ -140,18 +140,21 @@ def update_skills(request):
         except Profile.DoesNotExist:
             print('Do something')
 
+        user = editing_profile
 
     else:
         user = request.user
         forms = Filling_Profile_form
 
-    user = editing_profile
 
     skills = Skill.objects.all()
     categories = Category.objects.all()
 
-    return render(request, 'filling_profile/profile_form.html',
-                  {'user': user, 'forms': forms, 'skills': skills, 'categories': 'categories'})
+    return redirect(request.Meta['HTTP_REFERER'],
+                    {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
+
+    # return render(request, request.Meta['HTTP_REFERER'],
+    #               {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
 
 
 def login(request):
