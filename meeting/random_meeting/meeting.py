@@ -6,7 +6,7 @@ import be_near.constants
 import json
 import random
 from be_near.constants import host, main_bot_token
-from filling_profile.CallbackData import checking_meeting, meeting_feedback
+from filling_profile.CallbackData import checking_meeting, meeting_feedback, meeting_status_callback
 
 import threading
 import schedule
@@ -21,10 +21,12 @@ import jwt
 import requests
 
 from meeting.random_meeting.change_meeting_status import change_meeting_status
+from telegram_services.keyboards import two_buttons
 from telegram_services.send_message import get_telegram_id, get_username
 from telegram_services.send_message import send_message
 
 """  Запустить процес формирования встреч  """
+
 
 def meeting():
     all_profiles = Profile_for_Metting.objects.all()
@@ -35,7 +37,8 @@ def meeting():
         all_profiles = list(all_profiles)
         print(f'-------------all_profiles list: {all_profiles}---------------------')
         first_profile = all_profiles.pop(0)
-        print(f'-------------Первый пользователь <profile_id>:<full_name>: {first_profile.profile.id}:{first_profile.profile.full_name}---------------------')
+        print(
+            f'-------------Первый пользователь <profile_id>:<full_name>: {first_profile.profile.id}:{first_profile.profile.full_name}---------------------')
         print(f'-------------Весь список после взятия первого: {all_profiles}---------------------')
 
         selection_list = all_profiles.copy()
@@ -52,15 +55,18 @@ def meeting():
 
             # if ..... проверка встречались ли first_profile и second_profile до этого
 
-            meeting_list = list(Meet.objects.all().filter(Q(first_profile_id=first_profile.profile_id) | Q(second_profile_id=first_profile.profile_id)))
+            meeting_list = list(Meet.objects.all().filter(
+                Q(first_profile_id=first_profile.profile_id) | Q(second_profile_id=first_profile.profile_id)))
 
             print(f'-------------Список в котором {first_profile} есть: {meeting_list}---------------------')
 
             meeting_indicator = False
             for meet in meeting_list:
                 print(f'-------------meet:{meet}')
-                print(f'-------------second_profile.profile_id == meet.first_profile_id:{int(second_profile.profile_id) == int(meet.first_profile_id)}, second_profile.profile_id == meet.second_profile_id:{int(second_profile.profile_id) == int(meet.second_profile_id)} ---------------------')
-                if (int(second_profile.profile_id) == int(meet.first_profile_id)) or (int(second_profile.profile_id) == int(meet.second_profile_id)):
+                print(
+                    f'-------------second_profile.profile_id == meet.first_profile_id:{int(second_profile.profile_id) == int(meet.first_profile_id)}, second_profile.profile_id == meet.second_profile_id:{int(second_profile.profile_id) == int(meet.second_profile_id)} ---------------------')
+                if (int(second_profile.profile_id) == int(meet.first_profile_id)) or (
+                        int(second_profile.profile_id) == int(meet.second_profile_id)):
                     meeting_indicator = True
                     print(
                         f'-------------meeting_indicator = {meeting_indicator}. А весь список при этом: {all_profiles}')
@@ -101,25 +107,10 @@ def meeting():
 
 """  Проверка в среду, удалось ли связаться с собеседником  """
 
+
 def check_meeting_3_day():
-    text = f'Привет, уже успел пообщаться с'
-    buttons = InlineKeyboardMarkup(
-        row_width=3,
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='Да, всё гуд',
-                    callback_data=checking_meeting.new(status="ok_good!"),
-
-                ),
-                InlineKeyboardButton(
-                    text='Парнёр не отвечает',
-                    callback_data=checking_meeting.new(status="not_answer")
-
-                )
-            ]
-        ]
-    )
+    text = f'Привет, уже успел пообщаться с '
+    buttons = two_buttons('Да, всё гуд', checking_meeting.new(status="ok_good!"), 'Парнёр не отвечает', checking_meeting.new(status="not_answer"))
 
     all_active_meets = Meet.objects.all().filter(status='active')
 
@@ -128,30 +119,38 @@ def check_meeting_3_day():
         # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
         try:
             first_profile = Profile.objects.get(id=meets.first_profile_id).contacts
-            profile = True
+            first_profile_flag = True
         except Profile.DoesNotExist:
-            profile = False
-        if profile:
-            url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
+            first_profile_flag = False
 
-            payload = {}
-            headers = {}
-
-            response = requests.request("POST", url, headers=headers, data=payload)
-
-            send_message(main_bot_token,first_profile,)
-        profile = False
         try:
             second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
-            profile = True
+            second_profile_flag = True
         except Profile.DoesNotExist:
-            profile = False
-        if profile:
-            url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
-            response = requests.request("POST", url, headers=headers, data=payload)
+            second_profile_flag = False
+
+        if first_profile_flag and second_profile_flag:
+            send_message(main_bot_token, meets.first_profile_id,
+                         text+f'@{get_username(main_bot_token, meets.second_profile_id)}?',reply_markup=buttons)
+            send_message(main_bot_token, meets.second_profile_id,
+                         text+f'@{get_username(main_bot_token, meets.first_profile_id)}?',reply_markup=buttons)
+        elif not (first_profile_flag or second_profile_flag):
+            """С обоими пользователями что-то случилось"""
+
+        elif not first_profile_flag:
+            send_message(main_bot_token, meets.second_profile_id,
+                         f'Извини, кажется, что-то пошло не так  и твой собеседник отключился от встречи. Попробуем найти нового?',reply_markup=two_buttons("Да",meeting_status_callback.new(status="meeting_status = waiting"),"Нет",meeting_status_callback.new(status="meeting_status = not ready")))
+        else:
+            send_message(main_bot_token, meets.first_profile_id,
+                         f'Извини, кажется, что-то пошло не так  и твой собеседник отключился от встречи. Попробуем найти нового?',reply_markup=two_buttons("Да",meeting_status_callback.new(status="meeting_status = waiting"),"Нет",meeting_status_callback.new(status="meeting_status = not ready")))
+
+
+
+
 
 
 """  В воскресенье отправляем сообщение для оценки встречи  """
+
 
 def every_saturday():
     all_active_meets = Meet.objects.all().filter(status='active')

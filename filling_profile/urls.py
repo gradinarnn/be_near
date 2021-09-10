@@ -3,7 +3,7 @@ from django.urls import path
 
 from . import views
 from .views import RegistrationAPIView, LoginAPIView, UserRetrieveUpdateAPIView, stop_meet_change_partner, \
-    leave_feedback, filling_db
+    leave_feedback, filling_db, GetFeedbackFromUser
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -17,6 +17,7 @@ urlpatterns = [
     path('stop_meet_change_partner/', stop_meet_change_partner.as_view()),
     path('leave_feedback/', leave_feedback.as_view()),
     path('filling_db/',filling_db.as_view()),
+    path('getfeedbackfromuser/', GetFeedbackFromUser.as_view()),
     # path('new_schedule/', new_schedule.as_view())
 
 

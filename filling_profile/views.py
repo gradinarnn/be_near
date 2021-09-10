@@ -5,6 +5,8 @@ from django.db.models import Q
 import be_near.constants
 import json
 import random
+
+from be_near import constants
 from be_near.constants import host, main_bot_token
 from filling_profile.CallbackData import checking_meeting, meeting_feedback
 
@@ -126,6 +128,7 @@ def press_ok(request):
     return render(request, 'filling_profile/profile_form.html',
                   {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
 
+
 def update_skills(request):
     if request.method == "POST":
         print(request.user)
@@ -151,9 +154,7 @@ def update_skills(request):
     categories = Category.objects.all()
 
     return render(request, 'filling_profile/profile_form.html',
-                  {'user':user, 'forms':forms, 'skills':skills, 'categories':'categories'})
-
-    
+                  {'user': user, 'forms': forms, 'skills': skills, 'categories': 'categories'})
 
 
 def login(request):
@@ -433,121 +434,9 @@ class stop_meet_change_partner(APIView):
             return Response('ok', status=status.HTTP_200_OK)
 
 
-# def check_meeting_3_day():
-#     text = f'🙌 Привет! Уже узпел паобщаться с собеседником?'
-#     buttons = InlineKeyboardMarkup(
-#         row_width=3,
-#         inline_keyboard=[
-#             [
-#                 InlineKeyboardButton(
-#                     text='Да, всё гуд',
-#                     callback_data=checking_meeting.new(status="ok_good!"),
-#
-#                 ),
-#                 InlineKeyboardButton(
-#                     text='Нет, ещё не общались',
-#                     callback_data=checking_meeting.new(status="not_communicate")
-#
-#                 ),
-#                 InlineKeyboardButton(
-#                     text='Парнёр не отвечает',
-#                     callback_data=checking_meeting.new(status="not_answer")
-#
-#                 )
-#             ]
-#         ]
-#     )
-#
-#     all_active_meets = Meet.objects.all().filter(status='active')
-#
-#     for meets in all_active_meets:
-#
-#         # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
-#         try:
-#             first_profile = Profile.objects.get(id=meets.first_profile_id).contacts
-#             profile = True
-#         except Profile.DoesNotExist:
-#             profile = False
-#         if profile:
-#             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
-#
-#             payload = {}
-#             headers = {}
-#
-#             response = requests.request("POST", url, headers=headers, data=payload)
-#         profile = False
-#         try:
-#             second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
-#             profile = True
-#         except Profile.DoesNotExist:
-#             profile = False
-#         if profile:
-#             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
-#             response = requests.request("POST", url, headers=headers, data=payload)
 
 
-# def every_saturday():
-#     all_active_meets = Meet.objects.all().filter(status='active')
-#     buttons = InlineKeyboardMarkup(
-#         row_width=5,
-#         inline_keyboard=[
-#             [
-#                 InlineKeyboardButton(
-#                     text='👎',
-#                     callback_data=meeting_feedback.new(status="1")
-#
-#                 ),
-#                 InlineKeyboardButton(
-#                     text='😒',
-#                     callback_data=meeting_feedback.new(status="2")
-#
-#                 ),
-#                 InlineKeyboardButton(
-#                     text='🙂',
-#                     callback_data=meeting_feedback.new(status="3")
-#
-#                 ),
-#
-#                 InlineKeyboardButton(
-#                     text='😍',
-#                     callback_data=meeting_feedback.new(status="4")
-#                 ),
-#                 InlineKeyboardButton(
-#                     text='👍',
-#                     callback_data=meeting_feedback.new(status="5")
-#                 )
-#
-#             ]
-#         ]
-#     )
-#
-#     for meet in all_active_meets:
-#         # Если профиль был удален кем-то и как-то, то это предотвратит ошибку
-#         try:
-#             first_profile = Profile.objects.get(id=meet.first_profile_id).contacts
-#             profile = True
-#         except Profile.DoesNotExist:
-#             profile = False
-#         if profile:
-#             text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.second_profile_id))}? Можешь оценить встречу?'
-#             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={first_profile}&text={text}&reply_markup={buttons}'
-#
-#             payload = {}
-#             headers = {}
-#
-#             response = requests.request("POST", url, headers=headers, data=payload)
-#         profile = False
-#         try:
-#             second_profile = Profile.objects.get(id=meet.second_profile_id).contacts
-#             profile = True
-#         except Profile.DoesNotExist:
-#             profile = False
-#         if profile:
-#             text = f'✨ Хэй, как прошла встреча с @{get_username(main_bot_token, get_telegram_id(meet.first_profile_id))}? Можешь оценить встречу?'
-#             url = f'https://api.telegram.org/bot{main_bot_token}/sendMessage?chat_id={second_profile}&text={text}&reply_markup={buttons}'
-#             response = requests.request("POST", url, headers=headers, data=payload)
-#         meet.status = "non_active"
-#         meet.save()
+
 
 #
 # def writte():
@@ -583,7 +472,6 @@ class stop_meet_change_partner(APIView):
 
 
 def run_threaded():
-
     schedule.every().monday.at("08:00").do(meeting, )
     schedule.every().wednesday.at("08:00").do(check_meeting_3_day, )
     schedule.every().saturday.at("16:00").do(every_saturday, )
@@ -623,16 +511,40 @@ class leave_feedback(APIView):
             return Response('not_ok', status=status.is_client_error(400))
 
 
-#для заполнения БД скиллами и категориями передать в параметрах запроса "machine_token":"значение"
+# для заполнения БД скиллами и категориями передать в параметрах запроса "machine_token":"значение"
 class filling_db(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
         machine_token = request.data.get('machine_token', {})
-        doing_filling_db(machine_token)
+        if machine_token == constants.a:
+            doing_filling_db()
 
         return Response('ok', status=status.HTTP_200_OK)
 
+
+class GetFeedbackFromUser(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        user_telegram = request.data.get('user_telegram', {})
+        profile = Profile.objects.get(contacts=user_telegram)
+        meets = list(Meet.objects.all().filter(Q(first_profile_id=profile.id) | Q(second_profile_id=profile.id),
+                                               status='active'))
+        if len(meets) == 1:
+            print(f'*********meets[0].first_feedback:{meets[0].first_feedback}')
+            print(f'*********meets[0].second_feedback:{meets[0].second_feedback}')
+
+            if (meets[0].first_feedback is not None) or (meets[0].second_feedback is not None):
+
+                return Response('true', status=status.HTTP_200_OK)
+            else:
+                return Response('false', status=status.HTTP_200_OK)
+
+        else:
+            print(f'*********Количество записей в списке встреч={len(meets)}')
+
+        return Response('many meets', status=status.HTTP_200_OK)
 
 # def match_skills_category(skills, categories):
 #     # Бинарный поиск для склейки данных
