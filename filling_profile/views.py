@@ -131,13 +131,10 @@ def press_ok(request):
 
 def update_skills(request):
     if request.method == "POST":
-        print(request.user)
         forms = Filling_Profile_form(request.POST)
         try:
             editing_profile = request.user
-            print(request.POST)
-            # print(request.POST['skills'])
-            editing_profile.skills = request.POST.get('skills')
+            editing_profile.skills = request.POST.get('skills_list')
             editing_profile.save()
 
         except Profile.DoesNotExist:
