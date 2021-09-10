@@ -74,7 +74,7 @@
 
 <!-- Вывод категорий выбранных и пр -->
 <!-- <form class="box block" action="{% url 'update_skills' %}" method="post">> -->
-<form class="box block" action="{% url 'update_skills' %}" method="post">
+<form class="box block" action="{% url 'press_ok' %}" method="post">
     {% csrf_token %}
         {% for category in categories %}
             <!-- Есть категория и у неё есть skills_set -->
