@@ -150,7 +150,7 @@ def update_skills(request):
     skills = Skill.objects.all()
     categories = Category.objects.all()
 
-    return render(request, request.build_absolute_uri(),
+    return render(request, 'filling_profile/profile_form.html',
                   {'user':user, 'forms':forms, 'skills':skills, 'categories':'categories'})
 
     
