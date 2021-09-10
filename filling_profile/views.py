@@ -129,7 +129,7 @@ def press_ok(request):
 def update_skills(request):
     if request.method == "POST":
         print(request.user)
-
+        forms = Filling_Profile_form(request.POST)
         try:
             editing_profile = request.user
             print(request.POST)
@@ -143,6 +143,7 @@ def update_skills(request):
 
     else:
         user = request.user
+        forms = Filling_Profile_form
 
     user = editing_profile
 
