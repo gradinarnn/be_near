@@ -150,7 +150,7 @@ def update_skills(request):
     skills = Skill.objects.all()
     categories = Category.objects.all()
 
-    return redirect(request.Meta['HTTP_REFERER'],
+    return redirect(request.headers['REFERER'],
                     {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
 
     # return render(request, request.Meta['HTTP_REFERER'],
