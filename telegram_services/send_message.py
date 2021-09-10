@@ -6,9 +6,12 @@ from filling_profile.models import Profile
 import requests
 
 
-def send_message(bot_token, user_id, text):
+def send_message(bot_token, user_id, text, reply_markup=None):
     telegram_id = get_telegram_id(user_id)
-    url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={telegram_id}&text={text}'
+    if reply_markup is None:
+        url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={telegram_id}&text={text}'
+    else:
+        url = f'https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={telegram_id}&text={text}&reply_markup={reply_markup}'
 
     payload = {}
     headers = {}

@@ -74,10 +74,10 @@ def meeting():
                 meeting.save()
 
                 send_message(bot_token=main_bot_token, user_id=first_profile.profile_id,
-                             text=f'Мы нашли тебе себеседника @{get_username(bot_token=main_bot_token, user_id=second_profile.profile_id)}. Ему интересно: {second_profile.profile.skills}.Приятной встречи 🌱')
+                             text=f'Мы нашли тебе себеседника, Вот его профиль: @{get_username(bot_token=main_bot_token, user_id=second_profile.profile_id)}. Ему интересно: {second_profile.profile.skills}.Приятной встречи 🌱')
 
                 send_message(bot_token=main_bot_token, user_id=second_profile.profile_id,
-                             text=f'Мы нашли тебе себеседника @{get_username(bot_token=main_bot_token, user_id=first_profile.profile_id)}. Ему интересно: {first_profile.profile.skills}.Приятной встречи 🌱')
+                             text=f'Мы нашли тебе себеседника, Вот его профиль: @{get_username(bot_token=main_bot_token, user_id=first_profile.profile_id)}. Ему интересно: {first_profile.profile.skills}.Приятной встречи 🌱')
 
                 # меняем статус встречи первого пользователя на "meeting"
                 change_meeting_status(user_id=first_profile.profile_id, status="meetting")
@@ -102,7 +102,7 @@ def meeting():
 """  Проверка в среду, удалось ли связаться с собеседником  """
 
 def check_meeting_3_day():
-    text = f'🙌 Привет! Уже узпел паобщаться с собеседником?'
+    text = f'Привет, уже успел пообщаться с'
     buttons = InlineKeyboardMarkup(
         row_width=3,
         inline_keyboard=[
@@ -110,11 +110,6 @@ def check_meeting_3_day():
                 InlineKeyboardButton(
                     text='Да, всё гуд',
                     callback_data=checking_meeting.new(status="ok_good!"),
-
-                ),
-                InlineKeyboardButton(
-                    text='Нет, ещё не общались',
-                    callback_data=checking_meeting.new(status="not_communicate")
 
                 ),
                 InlineKeyboardButton(
@@ -143,6 +138,8 @@ def check_meeting_3_day():
             headers = {}
 
             response = requests.request("POST", url, headers=headers, data=payload)
+
+            send_message(main_bot_token,first_profile,)
         profile = False
         try:
             second_profile = Profile.objects.get(id=meets.second_profile_id).contacts
