@@ -85,9 +85,9 @@
                         <span class="tag">
                             <label class="checkbox">
                                 {% if skill.skill_title in user.skills %}
-                                    <input name="skills" type="checkbox" value='{{ skill.skill_title }}' checked>
+                                    <input class="checker" name="skills" type="checkbox" value='{{ skill.skill_title }}' checked>
                                 {% else %}
-                                    <input name="skills" type="checkbox" value='{{ skill.skill_title }}'>
+                                    <input class="checker" name="skills" type="checkbox" value='{{ skill.skill_title }}'>
                                 {% endif %}
                                 {{ skill.skill_title }}
                             </label>
@@ -100,7 +100,7 @@
 
     <button type="submit" class="button is-link is-light is-normal" id='update'>Обновить</button>
     <a class="button is-light" href="https://t.me/beNearly_bot" target="_blank">Обратно в телеграм</a>
-    <!-- <p id="skills-texts" name="skills-texts"></p> -->
+    <p id="skills-texts" name="skills-texts"></p>
 
 </form>
 
@@ -116,23 +116,33 @@
     }
 
 
-    const btn = document.querySelector('#update')
+    const btn = document.querySelector('#update');
     const text_skills = document.querySelector('#skills_list'); 
 
-    btn.addEventListener('click', (event) => {
+    $('.checker').on('click', function () {
+        let checkboxStatus = $(this).prop('checked');
         text_skills.innerHTML = getSelectedCheckboxValues('skills');
+    })
 
-        // let xhr = new XMLHttpRequest();
-        // xhr.open('POST', "{% url 'update_skills' %}");
-        // xhr.send(getSelectedCheckboxValues('skills'));
-        // alert('Message was send');
+    // const checkboxes = document.querySelectorAll('#checker');
+    // checkboxes.addEventListener('click', (event) => {
+    //     text_skills.innerHTML = getSelectedCheckboxValues('skills');
+    // });
 
-        // xhr.upload.onerror = function() {
-        //     alert(`Произошла ошибка во время отправки: ${xhr.status}`);
-        // };
-        // text.innerHTML = getSelectedCheckboxValues('skills');
+    // btn.addEventListener('click', (event) => {
+    //     text_skills.innerHTML = getSelectedCheckboxValues('skills');
 
-    });
+    //     // let xhr = new XMLHttpRequest();
+    //     // xhr.open('POST', "{% url 'update_skills' %}");
+    //     // xhr.send(getSelectedCheckboxValues('skills'));
+    //     // alert('Message was send');
+
+    //     // xhr.upload.onerror = function() {
+    //     //     alert(`Произошла ошибка во время отправки: ${xhr.status}`);
+    //     // };
+    //     // text.innerHTML = getSelectedCheckboxValues('skills');
+
+    // });
 
 
 
