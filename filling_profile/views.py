@@ -10,6 +10,8 @@ from be_near import constants
 from be_near.constants import host, main_bot_token
 from filling_profile.CallbackData import checking_meeting, meeting_feedback
 
+from meeting.random_meeting.change_meeting_status import change_meeting_status
+
 import threading
 import schedule
 from aiogram.utils.callback_data import CallbackData
@@ -540,40 +542,23 @@ class GetFeedbackFromUser(APIView):
     def post(self, request):
         user_telegram = request.data.get('user_telegram', {})
         profile = Profile.objects.get(contacts=user_telegram)
-        meets = list(Meet.objects.all().filter(Q(first_profile_id=profile.id) | Q(second_profile_id=profile.id),
+        meet = list(Meet.objects.all().filter(Q(first_profile_id=profile.id) | Q(second_profile_id=profile.id),
                                                status='active'))
-        if len(meets) == 1:
-            print(f'*********meets[0].first_feedback:{meets[0].first_feedback}')
-            print(f'*********meets[0].second_feedback:{meets[0].second_feedback}')
+        if len(meet) == 1:
 
-            if (meets[0].first_feedback is not None) or (meets[0].second_feedback is not None):
+            change_meeting_status(meet[0].first_profile_id, "not ready")
+            change_meeting_status(meet[0].second_profile_id, "not ready")
+            meet[0].status = "non_active"
+            meet[0].save()
+
+            if (meet[0].first_feedback is not None) or (meet[0].second_feedback is not None):
 
                 return Response('true', status=status.HTTP_200_OK)
             else:
                 return Response('false', status=status.HTTP_200_OK)
 
         else:
-            print(f'*********Количество записей в списке встреч={len(meets)}')
+            print(f'*********Количество записей в списке встреч={len(meet)}')
 
         return Response('many meets', status=status.HTTP_200_OK)
 
-# def match_skills_category(skills, categories):
-#     # Бинарный поиск для склейки данных
-#     # Создаётся {key:value} -> key = category, value -> skills
-#     match_category = {}
-
-#     for category in categories:
-#         for skill in skills:
-#             if category.category_title == skill.skill_category:
-#                 match_category[category].append(skill.skill_category)
-
-#     return match_category
-
-
-# def update_info(request):
-#     # Получение информации (получаются данные по категориям и навыкам)
-#     # после чего происходит обновление страницы и данные профиля обновляются
-#     """ Обновление информации по скилл-сету на странице """
-
-
-#     pass

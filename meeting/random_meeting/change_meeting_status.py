@@ -11,6 +11,9 @@ def change_meeting_status(user_id, status):
     profile.meeting_status = status
     profile.save()
 
-    if status == "meetting":
-        profile_for_meeting=Profile_for_Metting.objects.get(profile=Profile.objects.get(id=user_id))
-        profile_for_meeting.delete()
+    if (status == "meetting") or (status == "not ready"):
+        try:
+            profile_for_meeting=Profile_for_Metting.objects.get(profile=Profile.objects.get(id=user_id))
+            profile_for_meeting.delete()
+        except Profile_for_Metting.DoesNotExist:
+            print('Профиля нет в таблице')
