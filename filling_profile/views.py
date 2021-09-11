@@ -31,7 +31,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from meeting.random_meeting.meeting import meeting, check_meeting_3_day, every_saturday
+from meeting.random_meeting.meeting import meeting, check_meeting_3_day, every_saturday, every_sunday
 from telegram_services.send_message import get_telegram_id, get_username
 from telegram_services.send_message import send_message
 from .filling_db import doing_filling_db
@@ -488,6 +488,7 @@ def run_threaded():
     schedule.every().monday.at("08:00").do(meeting, )
     schedule.every().wednesday.at("08:00").do(check_meeting_3_day, )
     schedule.every().saturday.at("16:00").do(every_saturday, )
+    schedule.every().sunday.at("08:00").do(every_sunday, )
 
     while True:  # этот цикл отсчитывает время. Он обязателен.
         schedule.run_pending()

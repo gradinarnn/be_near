@@ -4,7 +4,7 @@
 
 """ Токены ботов """
 
-main_bot_token = '1928540975:AAH7mUMOoogy7DUK2oPfb7_YftBDsvqV_lA'
+main_bot_token = '1928540975:AAFnANdXnU495Mi6qKyoszx5PSYkz_rNmSE'
 ten_minutes_bot_token = '1981260121:AAEfyQu2qOFpT-sW_PbIVypzkn6_maQHW8A'
 
 """ Все для адресации """

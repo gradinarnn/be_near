@@ -109,8 +109,15 @@ def meeting():
 
 
 def check_meeting_3_day():
+    # Присылаем сообщение тем кто остался без пары до субботы
+    all_profiles_from_Profile_for_Metting = Profile_for_Metting.objects.all()
+    for profile_from_Profile_for_Metting in all_profiles_from_Profile_for_Metting:
+        send_message(main_bot_token, profile_from_Profile_for_Metting.profile.id,
+                     "😭 Блин, мы очень старались, но пара так и не нашлась. Давай подождём до пятницы, вдруг кто-то объявится.")
+
     text = f'Привет, уже успел пообщаться с '
-    buttons = two_buttons('Да, всё гуд', checking_meeting.new(status="ok_good!"), 'Парнёр не отвечает', checking_meeting.new(status="not_answer"))
+    buttons = two_buttons('Да, всё гуд', checking_meeting.new(status="ok_good!"), 'Парнёр не отвечает',
+                          checking_meeting.new(status="not_answer"))
 
     all_active_meets = Meet.objects.all().filter(status='active')
 
@@ -131,28 +138,36 @@ def check_meeting_3_day():
 
         if first_profile_flag and second_profile_flag:
             send_message(main_bot_token, meets.first_profile_id,
-                         text+f'@{get_username(main_bot_token, meets.second_profile_id)}?',reply_markup=buttons)
+                         text + f'@{get_username(main_bot_token, meets.second_profile_id)}?', reply_markup=buttons)
             send_message(main_bot_token, meets.second_profile_id,
-                         text+f'@{get_username(main_bot_token, meets.first_profile_id)}?',reply_markup=buttons)
+                         text + f'@{get_username(main_bot_token, meets.first_profile_id)}?', reply_markup=buttons)
         elif not (first_profile_flag or second_profile_flag):
             """С обоими пользователями что-то случилось"""
 
         elif not first_profile_flag:
             send_message(main_bot_token, meets.second_profile_id,
-                         f'Извини, кажется, что-то пошло не так  и твой собеседник отключился от встречи. Попробуем найти нового?',reply_markup=two_buttons("Да",meeting_status_callback.new(status="meeting_status = waiting"),"Нет",meeting_status_callback.new(status="meeting_status = not ready")))
+                         f'Извини, кажется, что-то пошло не так  и твой собеседник отключился от встречи. Попробуем найти нового?',
+                         reply_markup=two_buttons("Да", meeting_status_callback.new(status="meeting_status = waiting"),
+                                                  "Нет",
+                                                  meeting_status_callback.new(status="meeting_status = not ready")))
         else:
             send_message(main_bot_token, meets.first_profile_id,
-                         f'Извини, кажется, что-то пошло не так  и твой собеседник отключился от встречи. Попробуем найти нового?',reply_markup=two_buttons("Да",meeting_status_callback.new(status="meeting_status = waiting"),"Нет",meeting_status_callback.new(status="meeting_status = not ready")))
+                         f'Извини, кажется, что-то пошло не так  и твой собеседник отключился от встречи. Попробуем найти нового?',
+                         reply_markup=two_buttons("Да", meeting_status_callback.new(status="meeting_status = waiting"),
+                                                  "Нет",
+                                                  meeting_status_callback.new(status="meeting_status = not ready")))
 
 
-
-
-
-
-"""  В воскресенье отправляем сообщение для оценки встречи  """
+"""  В субботу отправляем сообщение для оценки встречи  """
 
 
 def every_saturday():
+    # Присылаем сообщение тем кто остался без пары до субботы
+    all_profiles_from_Profile_for_Metting = Profile_for_Metting.objects.all()
+    for profile_from_Profile_for_Metting in all_profiles_from_Profile_for_Metting:
+        send_message(main_bot_token, profile_from_Profile_for_Metting.profile.id,
+                     "😭 Блин, мы очень старались, но пара так и не нашлась. Давай попробуем в воскресенье, когда мы начинаем нову")
+
     all_active_meets = Meet.objects.all().filter(status='active')
     buttons = InlineKeyboardMarkup(
         row_width=5,
@@ -219,3 +234,14 @@ def every_saturday():
             change_meeting_status(user_id=meet.second_profile_id, status="not ready")
         meet.status = "non_active"
         meet.save()
+
+
+def every_sunday():
+    profiles = Profile.objects.all()
+    for profile in profiles:
+        send_message(main_bot_token, profile.id,
+                     "🙃 Привет, у нас наступает новая неделя и новые встречи. Участвуешь ли ты?",
+                     reply_markup=two_buttons("👉Участвую",
+                                              meeting_status_callback.new(status="meeting_status = waiting"),
+                                              "Откажусь👈",
+                                              meeting_status_callback.new(status="meeting_status = not ready")))
