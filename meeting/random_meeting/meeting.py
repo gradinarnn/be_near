@@ -166,7 +166,7 @@ def every_saturday():
     all_profiles_from_Profile_for_Metting = Profile_for_Metting.objects.all()
     for profile_from_Profile_for_Metting in all_profiles_from_Profile_for_Metting:
         send_message(main_bot_token, profile_from_Profile_for_Metting.profile.id,
-                     "😭 Блин, мы очень старались, но пара так и не нашлась. Давай попробуем в воскресенье, когда мы начинаем нову")
+                     "😭 Блин, мы очень старались, но пара так и не нашлась. Давай попробуем в воскресенье, когда мы начинаем неделю новых встреч.")
 
     all_active_meets = Meet.objects.all().filter(status='active')
     buttons = InlineKeyboardMarkup(
