@@ -37,5 +37,3 @@
 docker stop $(docker container ls -aq)
 docker rmi -f $(docker images -a -q)
 docker-compose rm
-rm -R be_near
-rm -R telegram_bot

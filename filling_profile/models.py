@@ -115,7 +115,7 @@ class Category(models.Model):
         return f'{self.category_id}.{self.category_title}'
 
     class Meta:
-        db_table = 'Categories'
+        db_table = 'Category'
         verbose_name_plural = "Categories"
 
 
