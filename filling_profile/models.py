@@ -129,7 +129,7 @@ class Skill(models.Model):
         return f'{self.category.category_id}.{self.category.category_title} : {self.skill_id}.{self.skill_title}'
 
     class Meta:
-        db_table = 'Skills'
+        db_table = 'Skill'
 
 
 
