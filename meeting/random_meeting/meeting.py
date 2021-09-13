@@ -164,9 +164,10 @@ def check_meeting_3_day():
 def every_saturday():
     # Присылаем сообщение тем кто остался без пары до субботы
     all_profiles_from_Profile_for_Metting = Profile_for_Metting.objects.all()
+    print(f'*********every_saturday.all_profiles_from_Profile_for_Metting:{all_profiles_from_Profile_for_Metting}************')
     for profile_from_Profile_for_Metting in all_profiles_from_Profile_for_Metting:
         send_message(main_bot_token, profile_from_Profile_for_Metting.profile.id,
-                     "😭 Блин, мы очень старались, но пара так и не нашлась. Давай попробуем в воскресенье, когда мы начинаем неделю новых встреч.")
+                     "Простии, нам чертовски жаль, что ты остался без пары. Мы очень хотели бы загладить свою вину перед тобой. Мы вернемся к тебе в воскресенье. Надеемся, ты дашь нам шанс🧙‍♀")
 
     all_active_meets = Meet.objects.all().filter(status='active')
     buttons = InlineKeyboardMarkup(
