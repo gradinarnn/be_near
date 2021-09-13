@@ -42,17 +42,22 @@ from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer,
 )
 
-def token_decoder(req):
-    token = req.GET.get('token')
-    if token != None:
-        contacts = req.GET.get('contacts')
+# Если тебе нужно будет что-то извлечь из POST-запроса, пользуйся коллектором
+# При переходе на id'шники, вернуть коллекцию как []
+def collector_from_post(request, what_need_find):
+    collections = ''
+    for i in request.POST:
+        if what_need_find in i:
+            if collections != '':
+                collections = collections + ', ' + request.POST[i]
+            else:
+                collections = request.POST[i]
 
-        playload = jwt.decode(token, 'q', algorithms="HS256")
-        user = Profile.objects.get(pk=playload['id'])
 
-        return user
-    else:
-        return None
+    print(collections)
+
+    return collections
+
 
 def index(request):
     # На этом этапе склеиваем выбранные навыки и те, что есть в целом
@@ -67,6 +72,7 @@ def index(request):
         payload = jwt.decode(token, 'q', algorithms="HS256")  # Передача id-шника
         user = Profile.objects.get(pk=payload['id'])
         # print(request.user)
+        request.session['user_id'] = user.id
 
         if user.contacts == contacts:
             data = {"full_name": user.full_name,
@@ -98,66 +104,28 @@ def index(request):
     categories = Category.objects.all()
 
     return render(request, 'filling_profile/profile_form.html',
-                  {'user': user, 'skills': skills, 'categories': categories, 'forms': forms})
-
-
-def press_ok(request):
-    if request.method == "POST":
-        forms = Filling_Profile_form(request.POST)
-        prof = forms
-        print(f'**********prof.is_valid():{prof.is_valid()}*****************************')
-        print(f'**********prof.errors:{prof.errors}*****************************')
-        prof.skills = request.POST.get('skills_list')
-        print(f'**********prof.skills:{prof.skills}*****************************')
-
-        try:
-            # Принимаем обновлённые данные
-            # editing_profile = Profile.objects.get(email=request.POST.get('email'))
-            editing_profile = request.user
-            editing_profile.full_name = request.POST.get('full_name')
-            editing_profile.email = request.POST.get('email')
-            editing_profile.skills = request.POST.get('skills_list')
-            editing_profile.goal = request.POST.get('goal')
-            editing_profile.language = request.POST.get('language')
-            editing_profile.contacts = request.POST.get('contacts')
-            editing_profile.save()
-
-        except Profile.DoesNotExist:
-            prof.is_valid()
-
-            prof.save()
-
-        user = editing_profile
-
-
-
-    else:
-        forms = Filling_Profile_form
-        user = request.user
-
-    skills = Skill.objects.all()
-    categories = Category.objects.all()
-
-    return render(request, 'filling_profile/profile_form.html',
-                  {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
+                  {'user': user, 'skills': skills, 'categories': categories, 'forms': forms })
 
 
 def update_skills(request):
+    user_profile = Profile.objects.get(pk=request.session['user_id']) 
     if request.method == "POST":
         forms = Filling_Profile_form(request.POST)
+        
         try:
-            editing_profile = request.user
-            editing_profile.skills = request.POST.get('skills-texts')
+            editing_profile = user_profile
+            editing_profile.skills = collector_from_post(request,'check_')
             editing_profile.save()
 
         except Profile.DoesNotExist:
-            print('Do something')
+            print('Epmty User')
 
-        user = editing_profile
+
+        user = user_profile
 
     else:
-        user = request.user
-        forms = Filling_Profile_form
+        user = user_profile
+        forms = Filling_Profile_form(user_profile)
 
 
     skills = Skill.objects.all()
@@ -165,6 +133,32 @@ def update_skills(request):
 
     # return redirect(request.headers['REFERER'],
     #                 {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
+
+    return render(request, 'filling_profile/profile_form.html',
+                  {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
+
+def info_changer(request):
+    user_profile = Profile.objects.get(pk=request.session['user_id']) 
+    if request.method =="POST":
+        forms = Filling_Profile_form(request.POST)
+        if forms.is_valid:
+            try:
+                editing_profile = user_profile
+                editing_profile.full_name = request.POST['username']
+                editing_profile.email = request.POST['email']
+                editing_profile.save()
+
+            except Profile.DoesNotExist:
+                forms.is_valid()
+                forms.save()
+
+            user = editing_profile
+    else:
+        forms = Filling_Profile_form
+        user = request.user
+
+    skills = Skill.objects.all()
+    categories = Category.objects.all()
 
     return render(request, 'filling_profile/profile_form.html',
                   {'user': user, 'forms': forms, 'skills': skills, 'categories': categories})
