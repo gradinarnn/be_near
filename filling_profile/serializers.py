@@ -1,7 +1,9 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 import requests
-import be_near.constants
+
+import be_near
+from be_near.constants import not_ready_status_constant, waiting_status_constant
 from .models import Meet, Profile, Profile_for_Metting, Skill
 
 
@@ -150,11 +152,11 @@ class UserSerializer(serializers.ModelSerializer):
             print(f'Профиль не найден')
 
 
-        if (instance.meeting_status == 'waitting') and (profile_exist==False):
+        if (instance.meeting_status == waiting_status_constant) and (profile_exist==False):
             profile_for_meeting = Profile_for_Metting(profile=Profile.objects.get(contacts=instance.contacts))
             profile_for_meeting.save()
 
-        elif (instance.meeting_status == 'not ready') and (profile_exist==True):
+        elif (instance.meeting_status == not_ready_status_constant) and (profile_exist == True):
             Profile_for_Metting.objects.filter(profile=Profile.objects.get(contacts=instance.contacts)).delete()
 
         instance.save()

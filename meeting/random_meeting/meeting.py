@@ -5,7 +5,7 @@ from django.db.models import Q
 import be_near.constants
 import json
 import random
-from be_near.constants import host, main_bot_token
+from be_near.constants import host, main_bot_token, meeting_status_constant
 from filling_profile.CallbackData import checking_meeting, meeting_feedback, meeting_status_callback
 
 import threading
@@ -86,10 +86,10 @@ def meeting():
                              text=f'Мы нашли тебе себеседника, Вот его профиль: @{get_username(bot_token=main_bot_token, user_id=first_profile.profile_id)}. Ему интересно: {first_profile.profile.skills}.Приятной встречи 🌱')
 
                 # меняем статус встречи первого пользователя на "meeting"
-                change_meeting_status(user_id=first_profile.profile_id, status="meetting")
+                change_meeting_status(user_id=first_profile.profile_id, status=meeting_status_constant)
 
                 # меняем статус встречи второго пользователя на "meeting"
-                change_meeting_status(user_id=second_profile.profile_id, status="meetting")
+                change_meeting_status(user_id=second_profile.profile_id, status=meeting_status_constant)
 
                 meeting_success = True
             else:

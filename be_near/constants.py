@@ -17,7 +17,7 @@ host = "http://80.249.150.167:8000"
 a ='123osdfw4fvccxs'
 
 
-""" Статусы встречи """
-meeting = "meeting"
-not_ready = "not_ready"
-ready = "ready"
+"""Meeting status"""
+waiting_status_constant = "waiting"
+meeting_status_constant = "meeting"
+not_ready_status_constant = "not ready"
