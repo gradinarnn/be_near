@@ -437,43 +437,6 @@ class stop_meet_change_partner(APIView):
             return Response('ok', status=status.HTTP_200_OK)
 
 
-
-
-
-
-#
-# def writte():
-#     print(f'*************ЖИ ЕСТЬ******************')
-#
-#
-# def run_threaded():
-#
-#
-#
-#     while True:  # этот цикл отсчитывает время. Он обязателен.
-#         schedule.run_pending()
-#         time.sleep(1)
-#
-#
-# job_thread = threading.Thread(target=run_threaded)
-# job_thread.start()
-#
-#
-# class new_schedule(APIView):
-#
-#     permission_classes = (AllowAny,)
-#
-#     def post(self, request):
-#         time1= request.data.get('time')
-#         print(f'*********time:{time1}')
-#         schedule.every().day.at(str(time1)).do(writte, )
-#         print(f"***********предстоящая очередь без всего:{scheduler.queue}")
-#         print(f"***********предстоящая очередь.time:{scheduler.queue.time}")
-#         print(f"***********предстоящая очередь.priority:{scheduler.queue.priority}")
-#         print(f"***********предстоящая очередь.action:{scheduler.queue.action}")
-#         return Response('ok', status=status.HTTP_200_OK)
-
-
 def run_threaded():
     schedule.every().monday.at("08:00").do(meeting, )
     schedule.every().wednesday.at("08:00").do(check_meeting_3_day, )
