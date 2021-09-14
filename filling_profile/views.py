@@ -6,8 +6,7 @@ import be_near.constants
 import json
 import random
 
-from be_near import constants
-from be_near.constants import host, main_bot_token
+from be_near.constants import host, main_bot_token, not_ready_status_constant, machine_token_on_server, waiting_status_constant
 from filling_profile.CallbackData import checking_meeting, meeting_feedback
 
 from meeting.random_meeting.change_meeting_status import change_meeting_status
@@ -267,10 +266,10 @@ def stop_meeting(request):
         meet.save()
 
         first_profile = Profile.objects.get(id=meet.first_profile_id)
-        first_profile.meeting_status = "waitting"
+        first_profile.meeting_status = waiting_status_constant
         first_profile.save()
         second_profile = Profile.objects.get(id=meet.second_profile_id)
-        second_profile.meeting_status = "waitting"
+        second_profile.meeting_status = waiting_status_constant
         second_profile.save()
 
 
@@ -348,7 +347,7 @@ class stop_meet_change_partner(APIView):
     def post(self, request):
         profile_id = Profile.objects.get(contacts=request.data.get('profile_id', {})).id
         machine_token = request.data.get('machine_token', {})
-        if machine_token == be_near.constants.a:
+        if machine_token == machine_token_on_server:
 
             q = Meet.objects.all().filter(status='active').filter(first_profile_id=profile_id)
             w = Meet.objects.all().filter(status='active').filter(second_profile_id=profile_id)
@@ -364,7 +363,7 @@ class stop_meet_change_partner(APIView):
 
                 qq.save()
                 token1 = Profile.objects.get(contacts=user_id_first).token
-                payload_data = {"meeting_status": 'waitting'}
+                payload_data = {"meeting_status": waiting_status_constant}
 
                 payload_dict = {"profile": payload_data}
 
@@ -380,7 +379,7 @@ class stop_meet_change_partner(APIView):
                 response = requests.request("PATCH", url, headers=headers, data=payload)
 
                 token2 = Profile.objects.get(contacts=user_id_second).token
-                payload_data = {"meeting_status": 'waitting'}
+                payload_data = {"meeting_status": waiting_status_constant}
 
                 payload_dict = {"profile": payload_data}
 
@@ -407,7 +406,7 @@ class stop_meet_change_partner(APIView):
 
                 ww.save()
                 token1 = Profile.objects.get(contacts=user_id_first).token
-                payload_data = {"meeting_status": 'waitting'}
+                payload_data = {"meeting_status": waiting_status_constant}
 
                 payload_dict = {"profile": payload_data}
 
@@ -423,7 +422,7 @@ class stop_meet_change_partner(APIView):
                 response = requests.request("PATCH", url, headers=headers, data=payload)
 
                 token2 = Profile.objects.get(contacts=user_id_second).token
-                payload_data = {"meeting_status": 'waitting'}
+                payload_data = {"meeting_status": waiting_status_constant}
 
                 payload_dict = {"profile": payload_data}
 
@@ -503,7 +502,7 @@ class leave_feedback(APIView):
         feedback = request.data.get('feedback', {})
 
         # Сравниваем, наш ли это бот
-        if machine_token == be_near.constants.a:
+        if machine_token == machine_token_on_server:
             # Определяем какой пользователь(первый или второй) прислал feedback
             meet = Meet.objects.all().filter(Q(first_profile_id=profile_id) | Q(second_profile_id=profile_id),
                                              status='non_active').latest('date_meeting')
@@ -525,7 +524,7 @@ class filling_db(APIView):
 
     def post(self, request):
         machine_token = request.data.get('machine_token', {})
-        if machine_token == constants.a:
+        if machine_token == machine_token_on_server:
             doing_filling_db()
 
         return Response('ok', status=status.HTTP_200_OK)
@@ -541,8 +540,8 @@ class GetFeedbackFromUser(APIView):
                                                status='active'))
         if len(meet) == 1:
 
-            change_meeting_status(meet[0].first_profile_id, "not ready")
-            change_meeting_status(meet[0].second_profile_id, "not ready")
+            change_meeting_status(meet[0].first_profile_id, not_ready_status_constant)
+            change_meeting_status(meet[0].second_profile_id, not_ready_status_constant)
             meet[0].status = "non_active"
             meet[0].save()
 

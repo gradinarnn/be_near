@@ -14,7 +14,7 @@ host = "http://80.249.150.167:8000"
 
 """ Machine token """
 
-a ='123osdfw4fvccxs'
+machine_token_on_server = '123osdfw4fvccxs'
 
 
 """Meeting status"""

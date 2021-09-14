@@ -41,7 +41,7 @@ class Ready_to_Meet(APIView):
         machine_token = request.data.get('machine_token', {})
 
         # Сравниваем, наш ли это бот
-        if machine_token == be_near.constants.a:
+        if machine_token == be_near.constants.machine_token_on_server:
 
             if Ten_Minutes_Profile_List.objects.all().count() == 0:
 
@@ -72,7 +72,7 @@ class Chatting(APIView):
         machine_token = request.data.get('machine_token', {})
         message = request.data.get('message', {})
         # Сравниваем, наш ли это бот
-        if machine_token == be_near.constants.a:
+        if machine_token == be_near.constants.machine_token_on_server:
             meet = Ten_Minutes_Meet.objects.all().filter(
                 Q(first_profile_id=profile_id) | Q(second_profile_id=profile_id),
                 status='active').latest('date_meeting')

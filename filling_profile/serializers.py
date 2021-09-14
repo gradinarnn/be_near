@@ -53,7 +53,7 @@ class LoginSerializer(serializers.Serializer):
         contacts = data.get('contacts', None)
         machine_token = data.get('machine_token', None)
 
-        if machine_token == be_near.constants.a:
+        if machine_token == be_near.constants.machine_token_on_server:
 
             # Запускает Auth_by_telegram
             user = authenticate(self, contacts=contacts)
