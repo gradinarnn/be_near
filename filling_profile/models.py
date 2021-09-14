@@ -51,11 +51,12 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)
     full_name = models.CharField('полнейшее имя', max_length=50, blank=True)
     email = models.CharField('email адрес', max_length=50, null=True, blank=True, unique=True)
-    skills = models.CharField('навыки', max_length=150, null=True)
+    skills = models.CharField('навыки', max_length=150, default=None, null=True, blank=True)
     goal = models.IntegerField('цель общенщения', default=None, null=True, blank=True)
     contacts = models.CharField('Telegram', max_length=15, default='', null=True, blank=True)
     language = models.CharField('язык', max_length=20, default='', null=True, blank=True)
     meeting_status = models.CharField(max_length=20, default="not ready", null=True)
+    meet_id = models.IntegerField('id встречи', default=None, null=True, blank=True)
     is_staff = models.BooleanField(default=False)
 
     def __str__(self):

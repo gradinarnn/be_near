@@ -2,7 +2,7 @@ from sched import scheduler
 
 from django.db.models import Q
 
-import be_near.constants
+
 import json
 import random
 
@@ -336,9 +336,6 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-def check_meeting(request):
-    # получаем все встречи
-    all_meeting = Meet.objects.all().filter(status='active')
 
 
 class stop_meet_change_partner(APIView):

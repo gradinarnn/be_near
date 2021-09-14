@@ -87,9 +87,13 @@ def meeting():
 
                 # меняем статус встречи первого пользователя на "meeting"
                 change_meeting_status(user_id=first_profile.profile_id, status=meeting_status_constant)
-
                 # меняем статус встречи второго пользователя на "meeting"
                 change_meeting_status(user_id=second_profile.profile_id, status=meeting_status_constant)
+
+                first_profile.profile.meet_id = meeting.id
+                second_profile.profile.meet_id = meeting.id
+                first_profile.save()
+                second_profile.save()
 
                 meeting_success = True
             else:
